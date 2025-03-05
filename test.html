@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>히라가나 단어 외우기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .word {
+            font-size: 2em;
+            margin: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 1em;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>히라가나 단어 외우기</h1>
+    <div class="word" id="word"></div>
+    <input type="text" id="answer" placeholder="뜻을 입력하세요">
+    <button onclick="checkAnswer()">확인</button>
+    <div class="result" id="result"></div>
+    <button onclick="nextWord()">다음 단어</button>
+    
+    <script>
+        let words = [];
+        let currentWord = {};
+        
+        async function loadWords() {
+            try {
+                const response = await fetch('words.json');
+                words = await response.json();
+                nextWord();
+            } catch (error) {
+                console.error('單語データを読み込む際にエラーが発生しました:', error);
+            }
+        }
+        
+        function nextWord() {
+            if (words.length === 0) return;
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            document.getElementById("word").textContent = currentWord.hiragana + " (" + currentWord.kanji + ")";
+            document.getElementById("result").textContent = "";
+            document.getElementById("answer").value = "";
+        }
+        
+        function checkAnswer() {
+            const userAnswer = document.getElementById("answer").value.trim();
+            if (userAnswer === currentWord.meaning) {
+                document.getElementById("result").textContent = "正解です!";
+                document.getElementById("result").style.color = "green";
+            } else {
+                document.getElementById("result").textContent = "不正解です。正しい答え: " + currentWord.meaning;
+                document.getElementById("result").style.color = "red";
+            }
+        }
+        
+        loadWords();
+    </script>
+</body>
+</html>
