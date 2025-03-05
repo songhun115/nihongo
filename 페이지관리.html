@@ -1,0 +1,1107 @@
+
+<!-- saved from url=(0058)https://circleclinic.cafe24.com/admin/page/page_manage.php -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>페이지관리</title>
+
+<link rel="stylesheet" type="text/css" href="./페이지관리_files/admin.css">
+<link rel="shortcut icon" href="https://circleclinic.cafe24.com/admin/img/desktop/favicon.ico">
+<script language="javascript" src="./페이지관리_files/javascript.lib.js.다운로드"></script>
+<script language="javascript" src="./페이지관리_files/common.js.다운로드"></script>
+<script language="javascript" src="./페이지관리_files/editor.js.다운로드"></script>
+<script type="text/javascript" src="./페이지관리_files/jquery-3.6.1.min.js.다운로드"></script>
+
+
+<style>
+	#tab			{background:url(/admin/page/images/dEdit_tabBg.gif) repeat-x;width:1;height:25;color:222222;float:left;cursor:pointer;margin:8 0 0 0}
+	#tabon			{background:url(/admin/page/images/dEdit_tabBgOn.gif) repeat-x;height:27;color:222222;float:left;margin:5 0 0 0}
+	#tabon img		{cursor:pointer}
+	#win_left		{padding:6 0 0 10;width:282px}
+	#win_left .input	{width:173;height:21;background:url(/admin/page/images/dEdit_searchBg.gif);border:;color:2F70B1;font-size:12px;font-family:돋움;padding:5 0 0 7}
+
+	#AccordionContainer			{border:1px solid #7F9DB9;width:280;height:730px;margin:5 0 8 0;background:#FFFFFF}
+    #AccordionContainer .obj        {background:url(/admin/page/images/dEdit_boxBg.gif) repeat-x;width:280;height:27;padding:7 0 0 10;color:777777;font-size:12px;font-family:돋움;font-weight:bold;cursor:pointer}
+    #AccordionContainer .objon      {background:url(/admin/page/images/dEdit_boxBgOn.gif) repeat-x;width:280;height:27;padding:7 0 0 10;color:494949;font-size:12px;font-family:돋움;font-weight:bold;cursor:pointer}
+    #AccordionContainer .objhighlight   {background:url(/admin/page/images/dEdit_boxBgHi.gif) repeat-x;width:280;height:27;padding:7 0 0 10;color:494949;font-size:12px;font-family:돋움;font-weight:bold;cursor:pointer}
+
+    @media screen and (-webkit-min-device-pixel-ratio:0){
+    #AccordionContainer         {border:1px solid #7F9DB9;width:280;height:730px;margin:5 0 8 0;background:#FFFFFF}
+    #AccordionContainer .obj		{background:url(/admin/page/images/dEdit_boxBg.gif) repeat-x;width:270;height:20;padding:7 0 0 10;color:777777;font-size:12px;font-family:돋움;font-weight:bold;cursor:pointer}
+	#AccordionContainer .objon		{background:url(/admin/page/images/dEdit_boxBgOn.gif) repeat-x;width:270;height:20;padding:7 0 0 10;color:494949;font-size:12px;font-family:돋움;font-weight:bold;cursor:pointer}
+	#AccordionContainer .objhighlight	{background:url(/admin/page/images/dEdit_boxBgHi.gif) repeat-x;width:270;height:20;padding:7 0 0 10;color:494949;font-size:12px;font-family:돋움;font-weight:bold;cursor:pointer}
+    }
+
+	#AccordionContainer img 		{margin:4 11 0 0}
+	#win_left  img	{cursor:pointer}
+	#win_center		{width:13px;background:url(/admin/page/images/dEdit_boxBgRight.gif) right repeat-y}
+	#win_center img	{cursor:pointer;margin-top:314}
+	#contents		{border:1px solid #7F9DB9;width:100%;height:691px;margin:5 0 8 0;background:white;overflow:auto}
+	#win_right		{padding:0px 10 0 10}
+	#win_right span	{background:url(/admin/page/images/dEdit_RightBl.gif) no-repeat;padding:5 15 0 10}
+	#win_right img	{cursor:pointer}
+	#moduleInfo {border:1px solid #7F9DB9;margin:5 0 8 4;background:white;height:691px;padding:13 5 0 5;width:325;}
+	#detail_content	{height:23}
+	#detail_content	 .value	{color:2F70B1;font-size:11px;font-family:돋움;padding:4 0 0 6}
+	#detail_content	 .name	{color:333333;font-size:11px;font-family:돋움;padding:4 0 0 6}
+	#help	{color:666666;font-size:11px;font-family:돋움;background:url(/admin/page/images/dEdit_detailBl.gif) no-repeat;padding:0 0 0 14;line-height:18px;margin-top:8}
+</style>
+<script language="javascript">
+
+
+function btnAction(obj, on, off, clk) {
+	var obj	=	document.getElementById(obj);
+	fn	=	function() {
+		if(!obj.clicked) {
+			obj.className = on;
+		}
+	};
+	Common.addEvent(obj, 'onmouseover', fn);
+
+	fn	=	function() {
+		if(!obj.clicked) {
+			obj.className = off;
+		}
+	};
+	Common.addEvent(obj, 'onmouseout', fn);
+
+	fn	=	function() {
+		if(!obj.clicked) {
+			obj.className = clk;
+			obj.clicked = true;
+		} else {
+			obj.className = off;
+			obj.clicked = false;
+		}
+	};
+	Common.addEvent(obj, 'onclick', fn);
+}
+
+function ViewSource(fname)
+{
+	document.getElementById('helper').style.display = 'none';
+
+	var header = "<HTML><HEAD><meta http-equiv=\'Content-Type\' content=\'text/html; charset=euc-kr\'><STYLE>BODY {font-size:9pt;font-family:fixedsys}</STYLE></HEAD><BODY><DIV id='source' style='white-space:nowrap;'>";
+	var footer = "</DIV></BODY></HTML>";
+
+	if (textBody.document.designMode != "on")
+	{
+		textBody.document.designMode = "on";
+		textBody.document.open('text/html');
+		textBody.document.write(header);
+		textBody.document.write(footer);
+		textBody.document.close();
+	}
+
+    /*
+	fn = function(e) { return fnkeySave(e); };
+	Common.addEvent(textBody.document.body, 'onkeydown', fn);
+    */
+
+	document.getElementById('textBody').style.display = 'block';
+
+	textBody.document.body.onclick = SaveCurrentPos;
+
+	if (navigator.appName == "Microsoft Internet Explorer")
+  	textBody.document.all.tags("STYLE")[0].styleSheet.cssText = "P, PRE, DIV {font-size:9pt;font-family:fixedsys;margin-top:0px;margin-bottom:0px;} A {color:purple}";
+  else if (navigator.appName == "Netscape")
+    textBody.document.getElementsByTagName("STYLE")[0] = "P, PRE, DIV {font-size:9pt;font-family:fixedsys;margin-top:0px;margin-bottom:0px;} A {color:purple}";
+
+  var text_src = textBody.document.all ? textBody.document.all["source"] : textBody.document.getElementById("source");
+  str = builder_act.document.getElementById('source_txt').value;
+
+  if (navigator.appName == "Microsoft Internet Explorer"){
+	    text_src.innerText = str;
+  }else if (navigator.appName == "Netscape"){
+        //text_src.innerHTML = nl2br(Tag2Enti(str.toString()));
+	    var iframe = document.getElementById('textBody');
+	    var iframedoc = iframe.document;
+	    if (iframe.contentDocument) iframedoc = iframe.contentDocument;
+	    else if (iframe.contentWindow) iframedoc = iframe.contentWindow.document;
+
+        sText = nbsp(nl2br(Tag2Enti(str.toString())));
+        iframedoc.open();
+        iframedoc.write(sText);
+        iframedoc.close();
+
+        $("#textBody").contents().find("body").css({"font-family":"돋움", "font-size":"12px"});
+  }
+
+	if (document.getElementById('act_num').value)
+	{
+  	document.getElementById('edit_num').value = document.getElementById('act_num').value;
+  	document.getElementById('edit_type').value = document.getElementById('act_type').value;
+  }
+
+  if (builder_act.document.getElementById('use_module_list'))
+  	document.getElementById('module_list').value = builder_act.document.getElementById('use_module_list').value;
+  else
+  	document.getElementById('module_list').value = "";
+
+  builder_act.location = "/admin/page/module/module_var_list.php?mlist="+document.getElementById('module_list').value;
+
+  if (document.getElementById('edit_type').value == "page" || document.getElementById('edit_type').value == "module" || document.getElementById('edit_type').value == "layout")
+  {
+  	document.getElementById('page_info_module').style.display = "block";
+  	document.getElementById('moduleTab').style.display = "block";
+
+  	if (document.getElementById('edit_type').value == "page") {
+  		document.getElementById('page_preview').style.display = "block";
+	} else {
+  		document.getElementById('page_preview').style.display = "none";
+	}
+
+	if (document.getElementById('module_page_list')) {
+		if (document.getElementById('edit_type').value == "module") {
+			document.getElementById('module_page_list').style.display = "block";
+		} else {
+			document.getElementById('module_page_list').style.display = "none";
+		}
+	}
+  } else {
+ 	document.getElementById('page_info_module').style.display = "none";
+  	document.getElementById('moduleTab').style.display = "none";
+  	document.getElementById('page_preview').style.display = "none";
+  }
+
+  	OpenMenu('1');
+
+
+	type = document.getElementById('edit_type').value;
+	if (document.frames[fname].document.getElementById("clk_txt")) {
+		name = document.frames[fname].document.getElementById("clk_txt").innerText;
+	}
+}
+
+function checkEditorWidth(type, mode) {
+	var full_size = '945px';
+	var middle_size = '600px';
+	var obj_editor = document.getElementById('textBody');
+	obj_editor.style.width = middle_size;
+
+	switch(type) {
+		case 'layout':
+			if(mode == 1) {
+				document.getElementById('moduleInfo').style.display = 'block';
+			} else {
+				document.getElementById('moduleInfo').style.display = 'none';
+			}
+			break;
+		case 'content':
+		case 'file':
+			obj_editor.style.width = full_size;
+			break;
+		case 'module':
+			document.getElementById('moduleInfo').style.display = 'none';
+			obj_editor.style.width = full_size;
+			break;
+		case 'module_info':
+			if(mode == 'full') {
+				obj_editor.style.width = full_size;
+			} else {
+				obj_editor.style.width = middle_size;
+			}
+			break;
+		case 'page':
+			if(document.getElementById('module_list').value) {
+				if(mode == 1) {
+					document.getElementById('moduleInfo').style.display = 'block';
+				} else {
+					document.getElementById('moduleInfo').style.display = 'none';
+				}
+				obj_editor.style.width = middle_size;
+			} else {
+				document.getElementById('moduleInfo').style.display = 'none';
+				obj_editor.style.width = full_size;
+			}
+			break;
+	}
+}
+
+function Tag2Enti(src)
+{
+	var tmp;
+
+	if (src == "")
+		tmp = "&nbsp;";
+	else
+	    tmp = chgStr( chgStr( src, "<", "&lt;" ), ">", "&gt;" );
+	return tmp;
+}
+
+function nbsp(src)
+{
+    var tmp;
+
+    if (src == "")
+        tmp = "&nbsp;";
+    else
+    	tmp = chgStr(src, " ", "&nbsp;");
+    return tmp;
+}
+
+function nl2br(src)
+{
+	var tmp;
+	if ( src  == "" )
+		tmp =  "&nbsp;";
+	else
+	  tmp = chgStr(src, "\n", "<br>");
+	return tmp;
+}
+
+function chgStr(src,s1,s2)
+{
+	var tmp;
+
+	if ( src.indexOf(s1) == -1)
+		return src;
+
+	while( src.indexOf(s1) > -1)
+	{
+	  tmp = src.substr(0, src.indexOf(s1));
+	  tmp += s2;
+	  tmp += src.substr(src.indexOf(s1)+s1.length,src.length);
+	  src = tmp;
+	}
+	return tmp;
+}
+
+function GetText(obj)
+{
+	var str = "";
+	var co;
+
+	if (obj)
+	{
+		for ( co = obj.firstChild; co; co = co.nextSibling)
+		{
+			if (co.hasChildNodes() && co.tagName !="SCRIPT")
+			{
+				str += GetText(co);
+			}
+
+			if (co.nodeType == 3 && co.data)
+			{
+			  str += co.nodeValue;
+			}
+
+			if (co.nodeType == 1 && (co.nodeName == "DIV" || co.nodeName == "PRE" || co.tagName == "BR"))
+			{
+				str += "\n";
+			}
+		}
+		return str;
+	}
+}
+
+function _mergedSourceContent(containDoc){
+    var divs = containDoc.getElementsByTagName("div");
+    for(var i=0,text=[];i<divs.length;i++){
+        if(divs[i].id == 'source'){
+            var divs2 = divs[i].getElementsByTagName('div');
+            for(var j=0,hasChild = false;j<divs2.length;j++){
+                if(divs2[j].id == 'source') hasChild = true;
+                if(hasChild) break;
+            }
+            if(hasChild) continue;
+            text.push(divs[i].innerText);
+        }
+    }
+    return text.join("\n");
+}
+
+// [skyoon : 2009-11-12]
+function SaveContent(msg)
+{
+    if(msg != '') {
+        alert(msg);
+        return false;
+    }
+	if (confirm("저장하시겠습니까?"))
+	{
+		bizEdit = textBody;
+
+		if (navigator.appName == "Microsoft Internet Explorer")
+		{
+			document.getElementById('saveText').value = bizEdit.document.body.innerText;
+		}
+		else if (navigator.appName == "Netscape")
+		{
+			//document.getElementById('saveText').value = GetText(bizEdit.document.getElementById('source'));
+			//document.getElementById('saveText').value = _mergedSourceContent(textBody.document);
+			document.getElementById('saveText').value = replaceNbspa(bizEdit.document.body.innerText);
+		}
+
+		document.saveFrm.no.value = document.getElementById('edit_num').value;
+		document.saveFrm.act.value = "save";
+		document.saveFrm.target = "builder_act";
+
+		document.saveFrm.action = document.getElementById('edit_type').value+"/"+document.getElementById('edit_type').value+"_act.php";
+		document.saveFrm.submit();
+
+		document.getElementById('Loading_Data').style.display = "block";
+	}
+}
+
+function replaceNbspa(_text)
+{
+    return _text.replace(new RegExp(String.fromCharCode(160),"g"), " ");
+}
+
+function PreviewContent()
+{
+	bizEdit = textBody;
+
+	if (navigator.appName == "Microsoft Internet Explorer")
+	{
+		document.getElementById('saveText').value = bizEdit.document.body.innerText;
+	}
+	else if (navigator.appName == "Netscape")
+	{
+		//document.getElementById('saveText').value = GetText(bizEdit.document.getElementById('source'));
+		//document.getElementById('saveText').value = _mergedSourceContent(textBody.document);
+		document.getElementById('saveText').value = replaceNbspa(bizEdit.document.body.innerText);
+	}
+
+	document.saveFrm.no.value = document.getElementById('edit_num').value;
+	document.saveFrm.act.value = "preview";
+	document.saveFrm.target = "builder_act";
+
+	document.saveFrm.action = document.getElementById('edit_type').value+"/"+document.getElementById('edit_type').value+"_act.php";
+	document.saveFrm.submit();
+
+	document.getElementById('Loading_Data').style.display = "block";
+}
+
+function PreviewOpen(no)
+{
+	WinOpen('page_preview.php?no='+no,'page_preview','800','600','1');
+}
+
+function ChkSource()
+{
+	var text_src = textBody.document.all ? textBody.document.all["source"] : textBody.document.getElementById("source");
+	text_src.style.behavior = "";
+	text_src.style.behavior = "url('/admin/js/highlight.htc')";
+}
+
+function SaveCurrentPos () {
+	var objText = textBody.document.body;
+	if (objText.createTextRange)
+  {
+  	objText.currentPos = document.selection.createRange().duplicate();
+	}
+}
+
+function InsertText (text) {
+	var objText = textBody.document.body;
+	if (objText.createTextRange && objText.currentPos)
+	{
+		var currentPos = objText.currentPos;
+	    currentPos.text = currentPos.text.charAt(currentPos.text.length - 1) == ' ' ? text + ' ' : text;
+	}else{
+		$("#textBody").contents().find('body').insertAtCaret(text);
+	}
+}
+
+jQuery.fn.extend({
+    insertAtCaret: function (html) {
+        var winObject = function (el){
+            var doc = el.ownerDocument;
+            return doc.defaultView || doc.parentWindow
+        };
+        return this.each(function (i) {
+                var sel, range, w = this;
+                w = winObject(w);
+                if (w.getSelection) {
+                    // IE9 and non-IE
+                    sel = w.getSelection();
+                    if (sel.getRangeAt && sel.rangeCount) {
+                        range = sel.getRangeAt(0);
+                        range.deleteContents();
+
+                        // Range.createContextualFragment() would be useful here but is
+                        // only relatively recently standardized and is not supported in
+                        // some browsers (IE9, for one)
+                        var el = w.document.createElement("div");
+                        el.innerHTML = html;
+                        var frag = w.document.createDocumentFragment(), node, lastNode;
+                        while ((node = el.firstChild)) {
+                            lastNode = frag.appendChild(node);
+                        }
+                        range.insertNode(frag);
+
+                        // Preserve the selection
+                        if (lastNode) {
+                            range = range.cloneRange();
+                            range.setStartAfter(lastNode);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        }
+                    }
+                } else if (w.document.selection && w.document.selection.type != "Control") {
+                    // IE < 9
+                    w.document.selection.createRange().pasteHTML(html);
+                }
+            }
+        )
+    }
+});
+
+function ViewModule (no, bm_code, mode) {
+  var real_url;
+	var url_str = location.href;
+
+  if (url_str.indexOf('?') > 0)
+  {
+  	real_url = url_str.split('?');
+  	real_url = real_url[0];
+  }
+  else
+  	real_url = url_str;
+
+	if(mode == 'b') {
+		parent.location.href = real_url+"?m_no="+no;
+	} else {
+		location.href = real_url+"?m_no="+no;
+	}
+	/*
+	if(no >= 10000) {
+		parent.location.href = '/admin/component/menu.php?component='+bm_code+'&file='+bm_code;
+	} else {
+		parent.location.href = real_url+"?m_no="+no;
+	}
+	*/
+}
+
+function ImgUp () {
+	WinOpen('img_ftp.php','upImg','800','800',1);
+}
+
+function ViewModuleList () {
+
+	if (document.getElementById('moduleInfo').style.display == "block")
+	{
+		document.getElementById('moduleInfo').style.display = "none";
+		document.getElementById('moduleTab').src = "/admin/img/page/tab_module_see.gif";
+		checkEditorWidth('module_info', 'full');
+	}
+	else if (document.getElementById('moduleInfo').style.display == "none")
+	{
+		document.getElementById('moduleInfo').style.display = "block";
+		document.getElementById('moduleTab').src = "/admin/img/page/tab_module_hide.gif";
+		checkEditorWidth('module_info', 'middle');
+	}
+	//showEditor();
+}
+
+function test(obj,type)
+{
+	if (obj)
+	{
+		if (type == "family")
+			textBody.document.all.source.style.fontFamily = obj.value;
+		else if (type == "size")
+			textBody.document.all.source.style.fontSize = obj.value;
+		else if (type == "weight")
+			textBody.document.all.source.style.fontWeight = obj.value;
+	}
+}
+
+function moduleView()
+{
+	if(document.getElementById('moduleInfo').style.display == 'none') {
+		document.getElementById('btn1').style.display = 'none';
+		document.getElementById('btn2').style.display = 'block';
+		document.getElementById('moduleInfo').style.display = 'block';
+	} else {
+		document.getElementById('btn1').style.display = 'block';
+		document.getElementById('btn2').style.display = 'none'
+		document.getElementById('moduleInfo').style.display = 'none';
+	}
+
+}
+
+function fullMonitor()
+{
+	var head = document.getElementById('head');
+	var foot = document.getElementById('foot');
+	var main = document.getElementById('main');
+	var fullMonitor	 =	document.getElementById('fullMonitor');
+	var miniMonitor	 =	document.getElementById('miniMonitor');
+
+	if(head.style.display == 'none' && foot.style.display == 'none') {
+		head.style.display = 'block';
+		foot.style.display = 'block';
+		//fullMonitor.src = '/admin/page/images/dEdit_btn2Off.gif'
+		fullMonitor.title = '전체화면';
+		//fullMonitor.onmouseover = function() { fullMonitor.src = '/admin/page/images/dEdit_btn2On.gif'; };
+		//fullMonitor.onmouseout = function() { fullMonitor.src = '/admin/page/images/dEdit_btn2Off.gif'; };
+	} else {
+		head.style.display = 'none';
+		foot.style.display = 'none';
+		//fullMonitor.src = '/admin/page/images/bnt_smoff.gif'
+		fullMonitor.title = '표준화면';
+		//fullMonitor.onmouseover = function() { fullMonitor.src = '/admin/page/images/bnt_smon.gif'; };
+		//fullMonitor.onmouseout = function() { fullMonitor.src = '/admin/page/images/bnt_smoff.gif'; };
+	}
+}
+
+function checkBrowser() {
+    var agent = navigator.userAgent.toLowerCase();
+    if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
+         // ie일 경우
+    } else {
+     	// ie아닌 경우
+        document.getElementById('page_notice').style.display = "block";
+    }
+}
+
+</script>
+
+
+<!--쿼터체크후 알럿출력-->
+
+	
+	<!-- 무료 템플릿 롤링의 자바 스크립트 -->
+	<script language="javascript">
+	//Math.random()
+		var scrollerheight=150;		// 스크롤러의 세로
+		var html,total_area=0,wait_flag=true;
+		var bMouseOver = 1;
+		var scrollspeed = 1;		// Scrolling 속도
+		var waitingtime = 1000;		// 멈추는 시간
+		var s_tmp = 0, s_amount =150 ;
+		var scroll_content=new Array();
+		var startPanel=0, n_panel=0, i=0;
+	
+
+	
+	
+		// 스크롤 시작
+		function startscroll()
+		{
+			var cnt=0;
+			for (cnt in scroll_content)
+				n_panel++;
+
+			n_panel = n_panel -1 ;
+			startPanel = Math.round(Math.random()*n_panel);
+			if(startPanel == 0)
+			{
+				cnt=0;
+				for (cnt in scroll_content)
+					insert_area(total_area, total_area++); // area 삽입
+			}
+			else if(startPanel == n_panel)
+			{
+				insert_area(startPanel, total_area);
+				total_area++;
+				for (i=0; i<startPanel; i++)
+				{
+					insert_area(i, total_area); // area 삽입
+					total_area++;
+				}
+			}
+			else if((startPanel > 0) || (startPanel < n_panel))
+			{
+				insert_area(startPanel, total_area);
+				total_area++;
+				for (i=startPanel+1; i<=n_panel; i++)
+				{
+					insert_area(i, total_area); // area 삽입
+					total_area++;
+				}
+				for (i=0; i<startPanel; i++)
+				{
+					insert_area(i, total_area); // area 삽입
+					total_area++;
+				}
+			}
+			window.setTimeout("scrolling()",waitingtime);
+		}
+		function scrolling(){ // 실제로 스크롤 하는 부분
+			if (bMouseOver && wait_flag)
+			{
+				for (i=0;i<total_area;i++){
+					tmp = document.getElementById('scroll_area'+i).style;
+					tmp.top = parseInt(tmp.top)-scrollspeed;
+					if (parseInt(tmp.top) <= -scrollerheight){
+						tmp.top = scrollerheight*(total_area-1);
+					}
+					if (s_tmp++ > (s_amount-1)*scroll_content.length){
+						wait_flag=false;
+						window.setTimeout("wait_flag=true;s_tmp=0;",waitingtime);
+					}
+				}
+			}
+			window.setTimeout("scrolling()",1);
+		}
+		function insert_area(idx, n){ // area 삽입
+			html='<div style="left: 0px; width: 100%; position: absolute; top: '+(scrollerheight*n)+'px" id="scroll_area'+n+'">\n';
+			html+=scroll_content[idx]+'\n\n';
+			html+='<table width=150 height=1 cellpadding=0 cellspacing=0 border=0 background="/admin/img/dot_line.gif"><tr><td></td></tr></table>\n';
+			html+='</div>\n';
+			document.write(html);
+		}
+	</script>
+	
+</head><body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" style="padding:0" oncontextmenu="return false">
+<div id="head">
+<script>
+
+function setSelect(obj,value){
+    document.getElementById(obj).value = '/admin/template/toss.php?tpl_id='+value;
+}
+
+</script>
+        <link rel="stylesheet" type="text/css" href="./페이지관리_files/admin_menu.css">
+    <script type="text/javascript" src="./페이지관리_files/LENSVil.js.다운로드"></script>
+    <script type="text/javascript" src="./페이지관리_files/adminMenu.js.다운로드"></script>
+    <script type="text/javascript" src="./페이지관리_files/webLogPost.js.다운로드"></script>
+    
+    <!-- @최상위 -->
+    <h1>
+                <p class="logo_cafe"><a href="https://circleclinic.cafe24.com/admin/main/main.php"><img src="./페이지관리_files/new_logo.gif" title="" alt="cafe24"></a></p>
+        <p class="logo_bar"><img src="./페이지관리_files/img_logo_bar.gif" title="" alt=""></p>
+        <p class="logo_builder"><img src="./페이지관리_files/logo_builder_admin.gif" title="" alt="빌더관리자"></p>
+                    </h1>
+	    <dl id="gomenu">
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/site/site_move.php?site=circleclinic.cafe24.com&amp;tpl=bizdemo158119" target="_blank"><img src="./페이지관리_files/gomenu_mysite.gif" title="" alt="내사이트 바로가기"></a></dd>
+    </dl>
+    <dl id="gotemplate">
+        <dd>
+            <select class="txt" id="my_template" name="my_template" onchange="moveMyTemplate(this)">
+                <option value=".">▼ 템플릿을 선택하세요</option>
+                                <option value="/admin/template/toss.php?tpl_id=base">base</option>
+                                <option value="/admin/template/toss.php?tpl_id=bizdemo158119">bizdemo158119</option>
+                            </select>
+        </dd>
+    </dl>
+    <dl id="globalmenu">
+        <dd><a href="https://circleclinic.cafe24.com/admin/main/main.php">홈</a></dd>
+        <dd><a href="https://circleclinic.cafe24.com/admin/sitemap/sitemap.php">사이트맵</a></dd>
+        <dd><a href="https://circleclinic.cafe24.com/admin/page/page_manage.php#none" onclick="window.open(&#39;/admin/builder_help/index.php&#39;, &#39;builder_help&#39;);">도움말</a></dd>
+        <dd><a href="https://user.cafe24.com/login/?service=user" target="_blank">개인정보변경</a></dd>        <dd class="end"><a href="https://circleclinic.cafe24.com/admin/login/auth.php?do=logout" class="logout">로그아웃</a></dd>
+    </dl>
+    <div class="clearboth"></div>
+    <!-- @최상위 //-->
+
+    <script>setSelect("my_template","bizdemo158119");</script>
+    <div style="overflow:hidden;height:4px;"></div>
+
+    <!-- @탑 메뉴 -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" nowrap="nowrap" id="topmenu" style="table-layout:fixed">
+        <tbody><tr valign="top">
+            <td class="leftimg" style="width:11px"><img src="./페이지관리_files/topmenu_left.gif"></td>
+            <td style="width:1100px">
+                <dl id="onedepth">
+                <!-- @DB 관리 메뉴 -->
+                                                        <dd><a href="https://circleclinic.cafe24.com/admin/main/main.php"><img id="top_menu_1" src="./페이지관리_files/topmenu_home_off.gif" rollover="/admin/img/newadmin/topmenu_home_on.gif" title="" alt=""></a></dd>
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/template_set/site_set_info.php"><img id="top_menu_2" src="./페이지관리_files/topmenu_homepage_off.gif" rollover="/admin/img/newadmin/topmenu_homepage_on.gif" title="" alt=""></a></dd>
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/template/temp_info.php"><img id="top_menu_3" src="./페이지관리_files/topmenu_design_off.gif" rollover="/admin/img/newadmin/topmenu_design_on.gif" title="" alt=""></a></dd>
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/site/member.php"><img id="top_menu_4" src="./페이지관리_files/topmenu_member_off.gif" rollover="/admin/img/newadmin/topmenu_member_on.gif" title="" alt=""></a></dd>
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/component/menu.php?component=board&amp;file=bbs_list"><img id="top_menu_5" src="./페이지관리_files/topmenu_component_off.gif" rollover="/admin/img/newadmin/topmenu_component_on.gif" title="" alt=""></a></dd>
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/myinform/myservice_info.php"><img id="top_menu_6" src="./페이지관리_files/topmenu_myservice_on.gif" rollover="/admin/img/newadmin/topmenu_myservice_on.gif" title="" alt=""></a></dd>
+                                        <dd><a href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php"><img id="top_menu_7" src="./페이지관리_files/topmenu_statistics_off.gif" rollover="/admin/img/newadmin/topmenu_statistics_on.gif" title="" alt=""></a></dd>
+                                                    </dl>
+                <div class="clearboth"></div>
+                <!-- @2Depth 메뉴 -->
+                <div id="twodepth">
+                                        
+                        <dl id="child_top_menu_2" style="visibility: hidden; position: absolute; top: 5px; left: 71px;">
+                                                                                                            <dd><a id="child_item_1" href="https://circleclinic.cafe24.com/admin/template_set/site_set_info.php">홈페이지 기본설정</a></dd>
+                                                                                                                                        <dd class="end"><a id="child_item_2" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=popup&amp;file=popup_list">팝업관리</a></dd>
+                                                                            </dl>
+                    
+                        <dl id="child_top_menu_3" style="visibility: hidden; position: absolute; top: 5px; left: 195px;">
+                                                                                                            <dd><a id="child_item_3" href="https://circleclinic.cafe24.com/admin/template/temp_info.php">템플릿 관리</a></dd>
+                                                                                                                                        <dd class="end"><a id="child_item_4" href="https://circleclinic.cafe24.com/admin/page/page_manage.php">템플릿 디자인 관리</a></dd>
+                                                                            </dl>
+                    
+                        <dl id="child_top_menu_4" style="visibility:hidden;position:absolute;top:5px;">
+                                                                                                            <dd><a id="child_item_5" href="https://circleclinic.cafe24.com/admin/site/member.php">회원관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_6" href="https://circleclinic.cafe24.com/admin/site/sms.php">SMS 관리</a></dd>
+                                                                                                                                        <dd class="end"><a id="child_item_7" href="https://circleclinic.cafe24.com/admin/myinform/mailer.php">메일발송관리</a></dd>
+                                                                            </dl>
+                    
+                        <dl id="child_top_menu_5" style="visibility:hidden;position:absolute;top:5px;">
+                                                                                                            <dd><a id="child_item_8" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=board&amp;file=bbs_list">게시판</a></dd>
+                                                                                                                                        <dd><a id="child_item_9" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=formmail&amp;file=form_mail_list">폼메일</a></dd>
+                                                                                                                                        <dd><a id="child_item_10" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=board&amp;file=board_admin_list&amp;component_type=board&amp;component_id=2">게시물 관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_11" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=poll&amp;file=online_poll_list">설문관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_12" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=schedule&amp;file=schedule">일정관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_13" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=coupon&amp;file=coupon">할인쿠폰관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_14" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=estimaterequest&amp;file=estimaterequest">견적서 관리</a></dd>
+                                                                                                                                        <dd class="end"><a id="child_item_15" href="https://circleclinic.cafe24.com/admin/component/menu.php?component=ecatalog&amp;file=eCatalogRect">e카탈로그</a></dd>
+                                                                            </dl>
+                    
+                        <dl id="child_top_menu_6" style="visibility: visible; position: absolute; top: 5px; left: 459px;">
+                                                                                                            <dd><a id="child_item_16" href="https://circleclinic.cafe24.com/admin/myinform/myservice_info.php">서비스 관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_17" href="https://user.cafe24.com/user/account/" target="_blank">기본정보 관리</a></dd>
+                                                                                                                                        <dd><a id="child_item_18" href="https://circleclinic.cafe24.com/admin/myinform/certify_mobile.php">부가서비스</a></dd>
+                                                                                                                                        <dd class="end"><a id="child_item_19" href="https://circleclinic.cafe24.com/admin/myinform/menu.php?category=backup&amp;file=backup">백업/복원 서비스</a></dd>
+                                                                            </dl>
+                    
+                        <dl id="child_top_menu_7" style="visibility:hidden;position:absolute;top:5px;">
+                                                                                                            <dd><a id="child_item_20" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php">주요통계 요약</a></dd>
+                                                                                                                                        <dd><a id="child_item_21" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=con&amp;cont=pvi">접속수 분석</a></dd>
+                                                                                                                                        <dd><a id="child_item_22" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=pth&amp;cont=egn">방문경로 분석</a></dd>
+                                                                                                                                        <dd><a id="child_item_23" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=adv&amp;cont=kwd">광고효과 분석</a></dd>
+                                                                                                                                        <dd><a id="child_item_24" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=rou&amp;cont=fav">이동경로 분석</a></dd>
+                                                                                                                                        <dd><a id="child_item_25" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=pag&amp;cont=fav">페이지 분석</a></dd>
+                                                                                                                                        <dd><a id="child_item_26" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=vis&amp;cont=rnt">방문자 분석</a></dd>
+                                                                                                                                        <dd><a id="child_item_27" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=cts&amp;cont=sit">컨텐츠 분석</a></dd>
+                                                                                                                                        <dd class="end"><a id="child_item_28" href="https://circleclinic.cafe24.com/admin/weblog_page/weblog_page.php?dir=env&amp;cont=bro">시스템환경 분석</a></dd>
+                                                                            </dl>
+                                    </div>
+                <!-- @2Depth 메뉴 //-->
+            </td>
+            <td align="right"><img src="./페이지관리_files/topmenu_right.gif"></td>
+        </tr>
+    </tbody></table>
+    <!-- @탑 메뉴 //-->
+    
+</div>
+<!---- 메인 시작--->
+<div id="main">
+<!--탭 시작-->
+<div style="background:url(/admin/page/images/dEdit_bg.gif) repeat-x;width:100%;padding:0px 0 0 10px" valign="top">
+	<div nowrap="" id="tabOn"><img src="./페이지관리_files/dEdit_tabLeftOn.gif" align="absmiddle">lounge&nbsp;&nbsp;<img src="./페이지관리_files/dEdit_tabRightOn.gif" align="absmiddle"></div>
+	<!-- <Div nowrap id='tab' onclick="location.href='?topmenu=$topmenu&tab=2'">
+		<img src='/admin/page/images/dEdit_tabLeft.gif' align='absmiddle'>Javascript.js<img src='/admin/page/images/dEdit_x.gif' align='absmiddle' hspace='7' onclick="window.alert('event')"><img src='/admin/page/images/dEdit_tabRight.gif' align='absmiddle'>
+	</div>
+	<Div nowrap id='tab' onclick="location.href='?topmenu=$topmenu&tab=3'">
+		<img src='/admin/page/images/dEdit_tabLeft.gif' align='absmiddle'>Javascript.js<img src='/admin/page/images/dEdit_x.gif' align='absmiddle' hspace='7' onclick="window.alert('event')"><img src='/admin/page/images/dEdit_tabRight.gif' align='absmiddle'>
+	</div>
+	<Div nowrap id='tab' onclick="location.href='?topmenu=$topmenu&tab=4'">
+		<img src='/admin/page/images/dEdit_tabLeft.gif' align='absmiddle'>Javascript.js<img src='/admin/page/images/dEdit_x.gif' align='absmiddle' hspace='7' onclick="window.alert('event')"><img src='/admin/page/images/dEdit_tabRight.gif' align='absmiddle'>
+	</div>
+	<Div nowrap id='tab' onclick="location.href='?topmenu=$topmenu&tab=5'">
+		<img src='/admin/page/images/dEdit_tabLeft.gif' align='absmiddle'>Javascript.js<img src='/admin/page/images/dEdit_x.gif' align='absmiddle' hspace='7' onclick="window.alert('event')"><img src='/admin/page/images/dEdit_tabRight.gif' align='absmiddle'>
+	</div>
+	<Div nowrap id='tab' onclick="location.href='?topmenu=$topmenu&tab=6'">
+		<img src='/admin/page/images/dEdit_tabLeft.gif' align='absmiddle'>Test.tpl<img src='/admin/page/images/dEdit_x.gif' align='absmiddle' hspace='7' onclick="window.alert('event')"><img src='/admin/page/images/dEdit_tabRight.gif' align='absmiddle'>
+	</div>-->
+	<div align="right" style="padding:4 9 0 0">
+		<!-- img src='/admin/page/images/dEdit_btn1On.gif' onClick="ImgUp()" style="cursor:pointer" title="이미지등록"-->
+		<img src="./페이지관리_files/dEdit_btnBar.gif" hspace="1">
+		<img id="fullMonitor" src="./페이지관리_files/dEdit_btn2On.gif" onclick="fullMonitor()" style="cursor:pointer" title="전체화면">
+		<img src="./페이지관리_files/dEdit_btnBar.gif" hspace="1">
+		<img src="./페이지관리_files/dEdit_btn3On.gif" onclick="WinOpen(&#39;/admin/builder_help/&#39;,&#39;builder_help&#39;,&#39;1010&#39;,&#39;750&#39;,&#39;1&#39;)" style="cursor:pointer" title="도움말">
+	</div>
+</div>
+<!--탭 끝-->
+<textarea id="saveText" name="saveText" style="display:none;width:100%"></textarea><table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="D1DFEB" id="mainTable">
+	<tbody><tr valign="top">
+	<!---왼쪽 메뉴 시작--->
+		<td id="win_left" height="100%">
+			<!-- <div><input type='text' class='input' value='관련파일 종합검색'><img src='/admin/page/images/dEdit_searchBtn.gif' align='absmiddle'></div>			 -->
+			<div id="AccordionContainer">
+				<div id="page" class="objhighlight" onclick="ChgContent(&#39;page&#39;,&#39;1&#39;);">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc1" style="display: none;">
+					페이지
+				</div>
+				<div id="Accordion1" style="display: block;">
+				   <iframe name="list1" id="list1" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/page_list.html"></iframe>
+				 </div>
+
+				<div id="layout" class="obj" onclick="ChgContent(&#39;layout&#39;,&#39;3&#39;)">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc2" style="display: block;">
+					레이아웃
+				</div>
+				<div id="Accordion2" style="display:none">
+				   <iframe name="list2" id="list2" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/saved_resource.html"></iframe>
+				 </div>
+
+				<div id="content" class="obj" onclick="ChgContent(&#39;content&#39;,&#39;4&#39;)">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc3" style="display: block;">
+						인트로
+				</div>
+				<div id="Accordion3" style="display:none">
+				   <iframe name="list3" id="list3" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/saved_resource(1).html"></iframe>
+				 </div>
+
+				<div id="module" class="obj" onclick="ChgContent(&#39;module&#39;,&#39;2&#39;)">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc4" style="display: block;">
+					모듈
+				</div>
+				<div id="Accordion4" style="display:none">
+				   <iframe name="list4" id="list4" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/saved_resource(2).html"></iframe>
+				 </div>
+
+				<div id="file" class="obj" onclick="ChgContent(&#39;file&#39;,&#39;5&#39;)">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc5" style="display: block;">
+					JS/CSS/TXT
+				</div>
+				<div id="Accordion5" style="display:none">
+				   <iframe name="list5" id="list5" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/saved_resource(3).html"></iframe>
+				 </div>
+
+				 <div id="page_waste" class="obj" onclick="ChgContent(&#39;page_waste&#39;,&#39;6&#39;)">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc6" style="display: block;">
+					페이지 휴지통
+				</div>
+				<div id="Accordion6" style="display:none">
+				   <iframe name="list6" id="list6" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/saved_resource(4).html"></iframe>
+				 </div>
+
+				 <div id="file_waste" class="obj" onclick="ChgContent(&#39;file_waste&#39;,&#39;7&#39;)">
+					<img src="./페이지관리_files/dEdit_boxBtn.gif" align="right" id="acc7" style="display: block;">
+					JS/CSS/TXT 휴지통
+				</div>
+				<div id="Accordion7" style="display:none">
+				   <iframe name="list7" id="list7" width="100%" height="539" marginwidth="0" marginheight="0" frameborder="0" hspace="0" vspace="0" src="./페이지관리_files/saved_resource(5).html"></iframe>
+				 </div>
+			</div>
+		</td>
+	<!---왼쪽 메뉴 끝--->
+		<td id="win_center">
+			<div id="b1"><img src="./페이지관리_files/dEdit_btnLeft.gif" onclick="win_left.style.display=&#39;none&#39;;b2.style.display=&#39;&#39;;b1.style.display=&#39;none&#39;" onmouseover="this.src=&#39;/admin/page/images/dEdit_btnRightOn_01.gif&#39;" onmouseout="this.src=&#39;/admin/page/images/dEdit_btnLeft.gif&#39;"></div>
+			<div id="b2" style="display:none"><img src="./페이지관리_files/dEdit_btnRightOff.gif" onmouseover="this.src=&#39;/admin/page/images/dEdit_btnRightOn.gif&#39;" onmouseout="this.src=&#39;/admin/page/images/dEdit_btnRightOff.gif&#39;" onclick="win_left.style.display=&#39;&#39;;b2.style.display=&#39;none&#39;;b1.style.display=&#39;&#39;"></div>
+		</td>
+
+		<td id="win_right">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tbody><tr>
+					<td>
+						<!---페이지 정보--->
+						<iframe name="info" id="info" width="100%" height="30" topmargin="0" marginwidth="0" marginheight="0" frameborder="0" scrolling="no" hspace="0" vspace="0" src="./페이지관리_files/page_info.html"></iframe>
+						<!---페이지 정보--->
+					</td>
+					<td width="10%" valign="bottom">
+						<div id="moduleTab" style="display: block;">
+							<img src="./페이지관리_files/dEdit_RightbtnOff.gif" align="right" onmouseover="this.src=&#39;/admin/page/images/dEdit_RightbtnOn.gif&#39;" onmouseout="this.src=&#39;/admin/page/images/dEdit_RightbtnOff.gif&#39;" onclick="moduleView()" id="btn1">
+							<img src="./페이지관리_files/dEdit_Rightbtn2Off.gif" align="right" onmouseover="this.src=&#39;/admin/page/images/dEdit_Rightbtn2On.gif&#39;" onmouseout="this.src=&#39;/admin/page/images/dEdit_Rightbtn2Off.gif&#39;" onclick="moduleView()" id="btn2" style="display:none">
+						</div>
+					</td>
+				</tr>
+			</tbody></table>
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tbody><tr valign="top">
+					<td width="100%">
+						<div id="contents"><iframe width="100%" height="100%" name="textBody" id="textBody" frameborder="0" style="display: block;" src="./페이지관리_files/saved_resource(6).html"></iframe>
+						<div id="helper" style="font-size: 12px; font-family: Dotum; padding: 10px 5px 0px 10px; display: none;">
+							본 도움말은 디카페 빌더의 특징과 빌더에서 사용되는 몇가지 용어들에 관하여 설명하고 빌더를 이용하여 간단한 사이트를 직접 제작해봄으로써 디카페빌더의 핵심 기능인 페이지 생성과 모듈의 기초적인 사용법을 익히는데 그 목적이 있습니다.<br><br>
+							!! 중요 : 도움말의 제작 목적 - 빌더를 이용한 페이지 생성과 모듈의 기초적 사용법에 대한 학습<br><br>
+							본 도움말에는 HTML 태그 사용법이나 웹사이트 제작에 관한 방법론 등은 포함되어 있지 않습니다.<br><br>
+							따라서 작업자는 이미 HTML 태그 사용법이나 웹사이트 제작 방법 등에 관하여 충분히 숙지하고 있음을 전제로 하고 본 도움말이 작성되었음을 알려드립니다.<br><br>
+							<b><font style="color:#2f70b0">디카페 빌더의 특징</font></b><br><br>
+							<b>1-1. 페이지 단위의 사이트 제작</b><br>
+							정하여진 Site Map을 기준으로 페이지(디렉토리)를 먼저 생성한 후 페이지 단위로 사이트를 제작하실 수 있습니다.<br><br>
+							1-2. 제작한 페이지의 연결<br>
+							페이지에는 작업자가 지정한 코드를 페이지 이름으로 하는 경로가 자동 부여됩니다. 경로에는 템플릿 변수가 포함되어 있습니다.
+							(예:{$변수}/index.php) 생성된 페이지들은 Anchor 태그를 사용하여 연결합니다. (예: <a href="https://circleclinic.cafe24.com/admin/page/%7B$%EB%B3%80%EC%88%98%7D/index.php">메뉴</a>)<br><br>
+							<b>1-3. 모듈제공</b><br>
+							디카페가 제공하는 다양한 모듈을 활용하면 별도의 프로그래밍 작업 없이도 게시판, 회원관리, 일정관리 등을 손쉽게 구현할 수 있으며, 또한 작업자 스스로 필요한 모듈을 제작하여 활용하실 수도 있습니다.
+							<br><br><b>1-4. 방문자수 통계</b><br>
+							홈페이지에 방문자수를 표시하시려면 아래의 변수를 에디터에 삽입하세요<br>
+							<pre> 변수: {{$TODAY_COUNT}}</pre> 오늘날짜에 방문자 방문자 표시 합니다.<br>
+							<pre> 변수: {{$TOTAL_COUNT}}</pre> 전체  방문자 표시 합니다.<br>
+							<br><br><b>1-4. 회원수 통계</b><br>
+							홈페이지에 회원수를 표시하시려면 아래의 변수를 에디터에 삽입하세요<br>
+							<pre> 변수: {{$TODAY_MEMBER_COUNT}}</pre> 오늘날짜에 가입한 회원수 표시 합니다.<br>
+							<pre> 변수: {{$TOTAL_MEMBER_COUNT}}</pre> 가입된 전체 회원수 표시 합니다.<br>
+
+						</div>
+						</div>
+						<div style="text-align:center">
+						<table border="0" id="page_btn" style="display: block; padding-left: 400px; padding-bottom: 8px;">
+							<tbody><tr>
+								<td>
+									<img src="./페이지관리_files/btn_save.gif" border="0" onclick="SaveContent(&#39;&#39;)"> <!-- [skyoon : 2009-11-12] -->
+								</td>
+								<td id="page_preview" style="display: block;">
+									<img src="./페이지관리_files/btn_review.gif" border="0" onclick="PreviewContent()">
+								</td>
+								<td>
+									<img src="./페이지관리_files/btn_check.gif" border="0" onclick="ChkSource()">
+								</td>
+							</tr>
+						</tbody></table>
+						</div>
+					</td>
+					<td valign="top" width="325">
+						<table border="0" cellpadding="0" cellspacing="0" height="100%" id="moduleInfo" style="display: block;">
+							<tbody><tr valign="top">
+								<td height="540px">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tbody><tr valign="top">
+											<td><img src="./페이지관리_files/dEdit_detailTle.gif"></td>
+											<td align="right"><img src="./페이지관리_files/dEdit_detailbtn1.gif" hspace="1" onclick="ViewModules()" id="page_info_module" style="cursor: pointer; display: block;"></td>
+										</tr>
+										<tr><td colspan="2" height="1"><img src="./페이지관리_files/dEdit_detailBar.gif"></td></tr>
+										<tr><td colspan="2" style="color:666666;font-size:11px;font-family:돋움;padding:5 0 9 1" height="26">현재페이지에서 사용 가능한 모듈</td></tr>
+									</tbody></table>
+									<table id="varList" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse" bordercolor="CECFCE">
+										<colgroup><col width="220">
+										<!-- <col width='118'></col> -->
+										<col width="34">
+										<!-- <col width='37'></col> -->
+										</colgroup><tbody><tr id="title" style="background:#E7EFF7;height:24px;text-align:center;padding-top:4">
+											<td style=";color:333333;font-family:돋움;font-size:11px;">변수값</td>
+											<!-- <td style=';color:333333;font-family:돋움;font-size:11px;'>모듈이름</td> -->
+											<td style=";color:333333;font-family:돋움;font-size:11px;">수정</td>
+											<!-- <td style=';color:333333;font-family:돋움;font-size:11px;'>해제</td> -->
+										</tr>
+									<tr id="detail_content"><td align="center" style="padding: 5px 0px;"><a href="javascript:InsertText(&#39;{{$common_bottom}}&#39;);" style="text-decoration:none; color: inherit;">{{$common_bottom}}</a><br><b>common_bottom</b></td><td align="center"><a href="javascript:ViewModule(&#39;217&#39;,&#39;common_bottom&#39;,&#39;b&#39;);"><img src="./페이지관리_files/dEdit_icon1.gif"></a></td></tr><tr id="detail_content"><td align="center" style="padding: 5px 0px;"><a href="javascript:InsertText(&#39;{{$common_top}}&#39;);" style="text-decoration:none; color: inherit;">{{$common_top}}</a><br><b>common_top</b></td><td align="center"><a href="javascript:ViewModule(&#39;216&#39;,&#39;common_top&#39;,&#39;b&#39;);"><img src="./페이지관리_files/dEdit_icon1.gif"></a></td></tr><tr id="detail_content"><td align="center" style="padding: 5px 0px;"><a href="javascript:InsertText(&#39;{{$insta}}&#39;);" style="text-decoration:none; color: inherit;">{{$insta}}</a><br><b>insta</b></td><td align="center"><a href="javascript:ViewModule(&#39;371&#39;,&#39;insta&#39;,&#39;b&#39;);"><img src="./페이지관리_files/dEdit_icon1.gif"></a></td></tr><tr id="detail_content"><td align="center" style="padding: 5px 0px;"><a href="javascript:InsertText(&#39;{{$youtube}}&#39;);" style="text-decoration:none; color: inherit;">{{$youtube}}</a><br><b>youtube</b></td><td align="center"><a href="javascript:ViewModule(&#39;372&#39;,&#39;youtube&#39;,&#39;b&#39;);"><img src="./페이지관리_files/dEdit_icon1.gif"></a></td></tr></tbody></table>
+									<div style="color:FF5500;font-size:11px;font-family:돋움;margin:6 0 0 5">* 소스의 원하시는 위치에 모듈 변수값을 입력하세요.</div>
+								</td></tr>
+							<tr>
+								<td valign="bottom">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-bottom:2px">
+										<tbody><tr><td><img src="./페이지관리_files/dEdit_detailTle2.gif"></td></tr>
+										<tr><td height="1" bgcolor="CECFCE"></td></tr>
+										<tr><td bgcolor="f7f7f7">
+												<div id="help">
+													현재페이지에 사용 가능한 모듈을 추가하지 않고 임의로 등록
+													한 변수는 실제화면에서 정상적으로 출력되지 않습니다.
+												</div>
+												<div id="help">
+													유사 모듈을 2개 이상 설치하는 경우, 정상적으로 동작하지 않을 수 있습니다. (예: 게시판 모듈 2개 동시 추가 등)
+												</div>
+                                                <div id="help">
+													동일한 모듈은 중복 추가할 수 없습니다.
+												</div>
+											</td>
+										</tr>
+									</tbody></table>
+									<table border="0" cellpadding="0" cellspacing="0">
+										<tbody><tr>
+											<td height="8"></td>
+										</tr>
+									</tbody></table>
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+			</tbody></table>
+		</td>
+	</tr>
+	<tr><td colspan="3" height="1" bgcolor="#819FBB"></td></tr>
+	<tr><td colspan="3" height="1" bgcolor="#FFFFFF"></td></tr>
+	<form name="saveFrm" method="post" target="builder_act" action="https://circleclinic.cafe24.com/admin/page/page/page_act.php"></form>
+		
+		<input type="hidden" id="no" name="no" value="137">
+		<input type="hidden" id="module_list" name="module_list" value="216|217|371|372">
+		<input type="hidden" name="act" value="save">
+		<!-- 각 컴포넌트 세부스킨 수정을 위해 hidden 값 정의 - 윤석규 -->
+		<input type="hidden" name="mode">
+		<input type="hidden" name="component">
+		<input type="hidden" name="template">
+		<input type="hidden" name="table">
+		<input type="hidden" name="skin_dir">
+		<input type="hidden" name="tpl_name">
+	
+</tbody></table>
+</div>
+<!---- 메인 끝--->
+
+<div id="foot">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="E5E5E5">
+	<tbody><tr>
+        <!--
+		<td height='53'>
+			<div id="bIcon" style="display:none;float:left;">
+				<OBJECT width=0 height=0 ID="DesktopIconObj" CLASSID="CLSID:8224896C-5852-4D0F-8AF7-CA9947F8FB2B" codebase='/admin/activex/DesktopIcon.cab'></OBJECT>
+				<img src='/admin/img/bl_footer.gif'><a href='#' onClick="DesktopIconObj.add()" style='color:032552'>바탕화면에 빌더 관리 어드민 바로가기 만들기</a>
+			</div>
+			<div style="float:left;"><a href="/admin/activex/DesktopIconInstall.msi">&nbsp;[수동 설치]</a></div>
+		</td>
+        -->
+		<td height="53" align="right">
+            			<a href="http://d.cafe24.com/" target="_blank">디자인센터</a> |
+			<a href="javascript:WinOpen(&#39;/admin/builder_help/&#39;,&#39;builder_help&#39;,&#39;1010&#39;,&#39;750&#39;,&#39;1&#39;);">도움말</a> |
+            			<a href="https://circleclinic.cafe24.com/admin/sitemap.php">어드민메뉴 전체보기</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+			<img src="./페이지관리_files/footer.gif" vspace="5">
+		</td>
+	</tr>
+</tbody></table>
+
+<div id="Loading_Data" style="position: absolute; width: 500px; top: 500px; left: 600px; height: 200px; z-index: 1; display: none;">
+	<img src="./페이지관리_files/loading.gif" border="0">
+</div>
+
+<!-- link rel="stylesheet" type="text/css" href="http://img.echosting.cafe24.com/css/notice_ec.css"/>
+<div id="page_notice" class="mNoticeEc typeRequired gLarge" style="position:absolute;top:100; left:100;z-index:1;display:none;">
+    <h1 style="cursor:move;float:none;" onmousedown="document.getElementById('page_notice').style.display = 'none'; return false;">
+    <strong class="required"></strong><span>Chrome / Firefox 사용시 주의사항 안내</span></h1>
+    <span class="flag">Notice</span>
+    <div class="content">
+        <ul class="info bullet divide">
+             Chrome/Firefox 브라우저를 사용하여 디자인 수정 시 디자인 수정에 오류가 발생할 수 있습니다.<br />
+             <br />
+             현재 관련 내용을 확인중에 있으며, 빠른 시일 내로 조치하여 불편이 없도록 하겠습니다.<br /><br />
+             디자인 수정 작업을 하실 때에는 불편하시더라도 Internet Explorer를 이용해 주시기 바랍니다.<br/>
+        <br/>
+
+        </ul>
+감사합니다.
+    </div>
+    <div class="footer">
+        <div class="mButton">
+            <a href="#none" class="btnNormal" onclick="document.getElementById('page_notice').style.display = 'none'; return false;"><span>닫기</span></a>
+        </div>
+    </div>
+    <button type="button" class="close" onclick="document.getElementById('page_notice').style.display = 'none'; return false;">공지사항 닫기</button>
+</div-->
+
+<input type="hidden" id="act_num" value="137">
+<input type="hidden" id="edit_num" value="137">
+<input type="hidden" id="file_type" value="02">
+<input type="hidden" id="edit_type" value="page">
+<input type="hidden" id="act_type" value="page">
+<iframe id="builder_act" name="builder_act" width="500" height="200" style="display:none" src="./페이지관리_files/saved_resource(7).html"></iframe>
+</div>
+
+
+
+<script language="javascript" type="text/javascript">
+	btnAction('page', 'objon', 'obj', 'objhighlight');
+	btnAction('layout', 'objon', 'obj', 'objhighlight');
+	btnAction('content', 'objon', 'obj', 'objhighlight');
+	btnAction('module', 'objon', 'obj', 'objhighlight');
+	btnAction('file', 'objon', 'obj', 'objhighlight');
+	btnAction('page_waste', 'objon', 'obj', 'objhighlight');
+	btnAction('file_waste', 'objon', 'obj', 'objhighlight');
+
+    /*
+	function fnkeySave(e)
+	{
+		var e = e||window.event;
+		if(e.ctrlKey) {
+			if(e.keyCode == 83) {
+				SaveContent('');
+				return false;
+			}
+		}
+		return true;
+	}
+    */
+
+    $("#textBody").on("load", function()
+    {
+    	var bCtrlDown = false;
+
+    	$("#textBody").contents().find("body").keydown(function(e)
+        {
+            if (e.keyCode == 17) bCtrlDown = true;
+        }).keyup(function(e)
+        {
+            if (e.keyCode == 17) bCtrlDown = false;
+
+        });
+
+    	$("#textBody").contents().find("body").keydown(function(e)
+        {
+            if (bCtrlDown && e.keyCode == 83) {
+            	bCtrlDown = false;
+            	SaveContent('');
+        		return false;
+            }
+        });
+    });
+</script>
+</body></html>

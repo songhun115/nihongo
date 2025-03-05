@@ -1,0 +1,81 @@
+body {padding:0 5px 0 5px !important}
+.clearboth {clear:both}
+h1 {margin:0;padding:14px 0 17px 20px;display:block;float:left;}
+h1 .logo_cafe, h1 .logo_bar, h1 .logo_builder {margin:0;padding:0;float:left;}
+h1 .logo_demo {margin:0;padding:3px 0 0 5px;float:left;}
+#topmenu, #onedepth, #twodepth {min-width:1024px;}
+
+#gomenu {position:absolute;top:6px;right:0;padding:0;margin:0;}
+#gomenu dd {float:left;margin:0 15px 0 0;font-size:0.7em}
+
+#gotemplate{position:absolute;top:20px;*top:31px;right:300px;height:25px;}
+#gotemplate dd{float:left;margin:0}
+
+#globalmenu {position:absolute;top:31px;right:0;padding:0;height:20px;margin:0;}
+#globalmenu dd {float:left;margin:0;padding:3px 7px 0 6px;background:url(/admin/img/newadmin/img_gloabl_bar.gif) center right no-repeat;line-height:1.0em;}
+#globalmenu a {font-size:12px;font-family:dotum;color:#999;text-decoration:none}
+#globalmenu .end {background:url(none);margin:0 7px 0 0}
+#globalmenu .logout {font-size:12px;font-family;gulim;color:#333333;text-decoration:none}
+
+/* 상단메뉴*/
+#topmenu {background:url(/admin/img/newadmin/topmenu_bg.gif) top repeat-x;height:70px;width:100%;margin:0;padding:0;}
+/* 1depth 메뉴 */
+#onedepth {margin:0;padding:0;width:100%;clear:both;}
+#onedepth dd {padding:11px 12px 0 0;margin:0 0 0 0;float:left;background:url(/admin/img/newadmin/topmenu_bar.gif) bottom right no-repeat;font-size:0;}
+/* 2depth 메뉴 */
+#twodepth {position:relative;height:18px;}
+#twodepth dl {margin:0;padding:0;font-size:0;}
+#twodepth dd {padding:0 10px 0 7px;margin:0 0 0 0;float:left;background:url(/admin/img/newadmin/img_2depth_bar.gif) top right no-repeat}
+#twodepth a:link {font-size:12px;font-family:dotum;font-weight:normal;color:#666666;text-decoration:none}
+#twodepth a:visited {font-size:12px;font-family:dotum;font-weight:normal;color:#666666;text-decoration:none}
+#twodepth a:hover {font-size:12px;font-family:dotum;font-weight:normal;color:#336699;text-decoration:none}
+#twodepth .end {padding:0 12px 0 8px;margin:0 0 0 0;float:left;background:url(none) top right no-repeat}
+
+/* 왼쪽메뉴 */
+#leftmenu {width:180px;min-width:180px;background:url(/admin/img/newadmin/bg_leftmenu.gif) repeat-y;}
+#leftmenu dl {margin:0;padding:0;}
+#leftmenu h2 {background:url(/admin/img/newadmin/bg_leftmenu_dt.gif) no-repeat;height:29px;*height:44px;font-size:14px;font-weight:bold;color:#FFFFFF;letter-spacing:-1px;padding:10px 0 5px 10px;margin:0}
+#leftmenu dt {cursor:pointer;margin:3px 8px 0 8px;padding:4px 0 0 15px;background:url(/admin/img/newadmin/bg_leftmenu_dd.gif) center left no-repeat;height:22px;*height:26px;width:149px;*width:164px;border-top:1px solid #d5d5d5;line-height:19px;}
+
+#leftmenu .first {border-top:0}/* 1depth 메뉴의 첫번째 라인 처리 */
+#leftmenu .now {background:#f0f0f0 url(/admin/img/newadmin/bg_leftmenu_dd.gif) center left no-repeat;} /* 1depth 메뉴의 현재 페이지 표시 */
+
+#leftmenu dt a:link {font-size:12px;font-family:dotum;color:#333333;text-decoration:none}
+#leftmenu dt a:visited {font-size:12px;font-family:dotum;color:#333333;text-decoration:none}
+#leftmenu dt a:hover {font-size:12px;font-family:dotum;color:#336699;text-decoration:underline}
+
+#leftmenu dd {margin:0 8px 0 8px;padding:0 0 0 15px;background:url(/admin/img/newadmin/bg_leftmenu_sub.gif) top left no-repeat;height:19px;*height:22px;width:149px;*width:164px;line-height:19px;}
+#leftmenu dd a:link {font-size:12px;font-family:dotum;color:#666666;text-decoration:none}
+#leftmenu dd a:visited {font-size:12px;font-family:dotum;color:#666666;text-decoration:none}
+#leftmenu dd a:hover {font-size:12px;font-family:dotum;color:#333333;text-decoration:underline}
+
+
+#leftmenu .now_sub {background:url(/admin/img/newadmin/bg_leftmenu_sub_on.gif) top left no-repeat} /* 2depth 메뉴의 현재 페이지 표시 */
+#leftmenu .now_sub a:link{color:#2568A9;}
+#leftmenu .now_sub a:visited{color:#2568A9;}
+#leftmenu .now_sub a:hover{color:#2568A9;}
+
+/* 접속통계 */
+#navi_table .sub_title{padding-left:10px;font-size:11pt;font-weight:bold;text-indent:15px;background:url(/admin/img/bl_stitle.gif) no-repeat 5px 40%;}
+#navi_table .history{text-align:right;}
+
+/* 사이트맵 */
+.sitemap_one_depth{color:#666;font:bold 11pt Dotum;padding:10px 0 10px 25px;background:url(/admin/img/newadmin/bg_leftmenu_dd.gif) no-repeat 8px 48%;}
+.sitemap_one_depth_child{float:left;width:180px;min-width:180px;margin-left:15px;background:url(/admin/img/newadmin/bg_leftmenu.gif) repeat-y;}
+
+.sitemap_item {width:180px;min-width:180px;margin-top:0;}
+.sitemap_item dl {margin:0;padding:0;}
+.sitemap_item h2 {background:url(/admin/img/newadmin/bg_leftmenu_dt.gif) no-repeat;height:29px;*height:44px;font-size:14px;font-weight:bold;color:#FFFFFF;letter-spacing:-1px;padding:10px 0 5px 10px;margin:0}
+.sitemap_item .dt {border-right:1px solid #999;border-bottom:1px solid #999;color:#2568A9;font-weight:bold;margin:0px 8px 0 3px;padding:4px 0 0 5px;background:url(/admin/img/newadmin/bg_leftmenu_dd.gif) center left no-repeat;height:22px;*height:26px;width:160px;*width:164px;border-top:1px solid #d5d5d5;line-height:19px;}
+
+.sitemap_item .first {border-top:0}/* 1depth 메뉴의 첫번째 라인 처리 */
+.sitemap_item .now {background:#f0f0f0;} /* 1depth 메뉴의 현재 페이지 표시 */
+
+.sitemap_item dt a:link {font-size:12px;font-family:dotum;color:#333333;text-decoration:none}
+.sitemap_item dt a:visited {font-size:12px;font-family:dotum;color:#333333;text-decoration:none}
+.sitemap_item dt a:hover {font-size:12px;font-family:dotum;color:#336699;text-decoration:underline}
+
+.sitemap_item dd {color:#444;margin:0 8px 0 3px;padding:3px 0 0 15px;background:url(/admin/img/newadmin/bg_leftmenu_sub.gif) no-repeat 0 43%;height:22px;*height:22px;width:149px;*width:164px;line-height:19px;}
+.sitemap_item dd a:link {font-size:12px;font-family:dotum;color:#666666;text-decoration:none}
+.sitemap_item dd a:visited {font-size:12px;font-family:dotum;color:#666666;text-decoration:none}
+.sitemap_item dd a:hover {font-size:12px;font-family:dotum;color:#333333;text-decoration:underline}

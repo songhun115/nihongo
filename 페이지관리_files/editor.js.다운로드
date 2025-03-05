@@ -1,0 +1,163 @@
+function ChgContent(type)
+{
+	var typeArr	 =	new Array('page', 'layout', 'content', 'module', 'file', 'page_waste', 'file_waste');
+	for(var i = 0; i < typeArr.length; i++) {
+		tmp = i + 1;
+		if(type != typeArr[i]) {
+			document.getElementById(typeArr[i]).className = 'obj';
+			document.getElementById('Accordion'+tmp).style.display = 'none';
+			document.getElementById(typeArr[i]).clicked = '';
+			document.getElementById('acc'+tmp).style.display = '';
+			document.getElementById('acc'+tmp).style.display = 'block';
+		}
+		if(type == typeArr[i]) {
+			document.getElementById(typeArr[i]).className = 'objhighlight';
+			document.getElementById('acc'+tmp).style.display = 'none';
+		}
+	}
+
+	document.getElementById('act_num').value = "";
+	document.getElementById('file_type').value = "";
+	document.getElementById('act_type').value = type;
+
+	switch (type)	{
+		case	'page'	:
+			if(document.getElementById('Accordion1').style.display == 'none') {
+				document.getElementById('list1').src="page/page_list.php";
+				document.getElementById('Accordion1').style.display = 'block';
+			} else {
+				document.getElementById('Accordion1').style.display = 'none';
+				document.getElementById('acc1').style.display = 'block';
+			}
+			break;
+		case	'module'	:
+			if(document.getElementById('Accordion4').style.display == 'none') {
+				document.getElementById('list4').src="module/module_list.php";
+				document.getElementById('Accordion4').style.display = 'block';
+			} else {
+				document.getElementById('Accordion4').style.display = 'none';
+				document.getElementById('acc4').style.display = 'block';
+			}
+			break;
+		case	'file'	:
+			if(document.getElementById('Accordion5').style.display == 'none') {
+				document.getElementById('list5').src="file/file_list.php";
+				document.getElementById('Accordion5').style.display = 'block';
+			} else {
+				document.getElementById('Accordion5').style.display = 'none';
+				document.getElementById('acc5').style.display = 'block';
+			}
+			break;
+		case	'layout'	:
+			if(document.getElementById('Accordion2').style.display == 'none') {
+				document.getElementById('list2').src="layout/layout_list.php";
+				document.getElementById('Accordion2').style.display = 'block';
+			} else {
+				document.getElementById('Accordion2').style.display = 'none';
+				document.getElementById('acc2').style.display = 'block';
+			}
+			break;
+		case	'content'	:
+			if(document.getElementById('Accordion3').style.display == 'none') {
+				document.getElementById('list3').src="content/content_list.php";
+				document.getElementById('Accordion3').style.display = 'block';
+			} else {
+				document.getElementById('Accordion3').style.display = 'none';
+				document.getElementById('acc3').style.display = 'block';
+			}
+			break;
+		case	'page_waste'	:
+			if(document.getElementById('Accordion6').style.display == 'none') {
+				document.getElementById('list6').src="page/waste_list.php";
+				document.getElementById('Accordion6').style.display = 'block';
+			} else {
+				document.getElementById('Accordion6').style.display = 'none'
+				document.getElementById('acc6').style.display = 'block';
+			}
+			break;
+		case	'file_waste'	:
+			if(document.getElementById('Accordion7').style.display == 'none') {
+				document.getElementById('list7').src="file/waste_list.php";
+				document.getElementById('Accordion7').style.display = 'block';
+			} else {
+				document.getElementById('Accordion7').style.display = 'none';
+				document.getElementById('acc7').style.display = 'block';
+			}
+			break;
+		default				:	return;	break;
+	}
+}
+
+function OpenMenu(chk)
+{
+	var act_type;
+
+	if (chk)
+	{
+		if (document.getElementById('edit_num').value == "")
+		{
+			alert("먼저 소스보기하실 파일을 먼저 선택하여 주십시오.");
+			return false;
+		}
+		else
+		{
+			act_type = "block";
+			//document.getElementById('menu').style.display = "none";
+			//document.getElementById('page_title').innerHTML = "파일소스보기";
+		}
+	}
+	else
+	{
+		act_type = "none";
+	//	document.getElementById('menu').style.display = "block";
+	//	document.getElementById('page_title').innerHTML = "파일목록보기";
+	}
+
+  if (document.getElementById('edit_type').value == "page" || document.getElementById('edit_type').value == "module" || document.getElementById('edit_type').value == "layout")
+  {
+	document.getElementById('page_info_module').style.display = act_type;
+ 	document.getElementById('moduleTab').style.display = act_type;
+  	document.getElementById('moduleInfo').style.display = act_type;
+  	if (document.getElementById('module_page_list') && document.getElementById('edit_type').value == "module")
+  	{
+  		document.getElementById('module_page_list').style.display = act_type;
+  	}
+  }
+  else
+  {
+	document.getElementById('page_info_module').style.display = "none";
+  	document.getElementById('moduleTab').style.display = "none";
+  	document.getElementById('moduleInfo').style.display = "none";
+  	if (document.getElementById('module_page_list'))
+  	{
+  		document.getElementById('module_page_list').style.display = "none";
+  	}
+  }
+
+	//document.getElementById('img_regist').style.display = act_type;
+	//document.getElementById('page_navigate').style.display = act_type;
+	//document.getElementById('textBody').style.display = act_type;
+	document.getElementById('page_btn').style.display = act_type;
+	//document.getElementById('textBody').style.display = act_type;
+	var type = document.getElementById('edit_type').value;
+	//checkEditorWidth(type, chk);
+}
+
+function ViewModules()
+{
+	/*if (document.getElementById('menu').style.display == "none")
+	{*/
+		if (document.getElementById('edit_type').value == "module" && document.getElementById('file_type').value == "02")
+		{
+			alert("제공 모듈에서는 모듈 설정이 불가능합니다.");
+			return;
+		}
+		else
+			WinOpen('module/use_module_list.php?no='+document.getElementById('edit_num').value+'&type='+document.getElementById('edit_type').value,'modules','500','650','0');
+	/*}
+	else
+	{
+		alert("소스창으로 돌아온 후에 가능합니다.");
+		return;
+	}*/
+}

@@ -1,0 +1,468 @@
+/* 등록 페이지 스크립트 시작 */
+function RegChk(reg) {
+
+    if(reg.type.value == "dir") {
+        if (reg.add_code.value == "") {
+            alert("디렉토리명을 등록하여 주시기 바랍니다.");
+            reg.add_code.focus();
+            return false;
+        }
+        var pattern = /^[A-Za-z0-9_]{2,}$/;
+        if (!(pattern.test(reg.add_code.value))) {
+            alert("디렉토리명은 2자 이상의 영문 및 숫자만 입력하실 수 있습니다.");
+            reg.add_code.focus();
+            return false;
+        }
+        if (reg.add_name.value == "") {
+            alert("디렉토리 이름을 등록하여 주시기 바랍니다.");
+            reg.add_name.focus();
+            return false;
+        }
+
+    } else {
+        if (reg.add_code.value == "") {
+            alert("파일명을 입력해 주시기 바랍니다.");
+            reg.add_code.focus();
+            return false;
+        }
+        var pattern = /^[A-Za-z0-9_]{2,}$/;
+        if (!(pattern.test(reg.add_code.value))) {
+            alert("파일명은 2자 이상의 영문 및 숫자만 입력하실 수 있습니다.");
+            reg.add_code.focus();
+            return false;
+        }
+        if (reg.add_name.value == "") {
+            alert("페이지 이름을 등록해 주시기 바랍니다.");
+            reg.add_name.focus();
+            return false;
+        }
+
+    }
+	
+	reg.submit();
+}
+/* 등록 페이지 스크립트 끝 */
+
+/* 복사, 이동 페이지 스크립트 시작 */
+function ChcDir(no,link)
+{
+	if (document.getElementById('clk_txt'))
+	{
+		ex_txtno = "txt_"+document.copyForm.act_no.value;
+		document.getElementById(ex_txtno).innerHTML = document.getElementById('clk_txt').innerHTML;
+	}
+	
+	var txtno = "txt_"+no;
+	document.getElementById(txtno).innerHTML = "<span id='clk_txt' style='background-color:#FFE59A'>"+document.getElementById(txtno).innerHTML+"</span>";
+	document.copyForm.act_no.value = no;
+	
+	document.getElementById('copy_dir').innerHTML = link;
+
+	var subno = "sub_"+no;
+	var headno = "head_icon_"+no;
+	var headicon = document.getElementById(headno).src;
+	
+	if (document.getElementById(subno))
+	{
+		if (document.getElementById(subno).style.display == "none")
+			document.getElementById(subno).style.display = "block";
+		else
+			document.getElementById(subno).style.display = "none";
+	}
+
+	if (headicon.indexOf("/admin/img/page/menu/dir_plastnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_mlastnode.gif";
+	else if (headicon.indexOf("/admin/img/page/menu/dir_pleftnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_mleftnode.gif";
+	else if (headicon.indexOf("/admin/img/page/menu/dir_mlastnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_plastnode.gif";
+	else if (headicon.indexOf("/admin/img/page/menu/dir_mleftnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_pleftnode.gif";
+	
+	return;
+}
+
+function ChoiceType(type)
+{
+	if (type == "c")
+	{
+		document.getElementById('act_type').innerHTML='복사';
+		document.copyForm.act_type.value='c';
+	}
+	else if (type == "m")
+	{
+		document.getElementById('act_type').innerHTML='이동';
+		document.copyForm.act_type.value='m';
+	}
+	else
+		return;
+}
+
+function CopyMove()
+{
+	if (confirm(document.getElementById('act_type').innerHTML+" 하시겠습니까?"))
+	{
+		document.copyForm.submit();
+	}
+}
+/* 복사, 이동 페이지 스크립트 끝 */
+
+/* 삭제 페이지 스크립트 시작 */
+function DelFile(dForm)
+{
+	if (dForm.type.value == "dir")
+		file = "디렉토리";
+	else if (dForm.type.value == "page")
+		file = "페이지";
+	
+	if (dForm.del_type[0].checked == true)
+	{
+		if (confirm("해당 "+file+"를 휴지통에 넣으시겠습니까?")) 
+		{
+			dForm.act.value = "trash";
+			dForm.submit();
+			return true;
+		}
+		else
+			return false;
+	}
+	else if (dForm.del_type[1].checked == true)
+	{
+		if (confirm("해당 "+file+"를 완전히 삭제하시겠습니까?"))
+		{
+			dForm.act.value = "delete";
+			dForm.submit();
+			return true;
+		}
+		else
+			return false;
+	}
+}
+/* 삭제 페이지 스크립트 끝 */
+
+/* 정보보기 창 닫기 스크립트 시작 */
+function CloseInfo()
+{
+	parent.document.getElementById('col_info_1').style.display='none';
+	parent.document.getElementById('col_info_2').style.display='none';
+	parent.document.getElementById('col_info_3').style.display='none';
+	parent.document.getElementById('list1').width='642';
+	parent.list1.document.getElementById('col_info').style.display = 'block';
+}
+/* 정보보기 창 닫기 스크립트 끝 */
+
+/* 리스트 페이지 스크립트 시작 */
+/* 상위 메뉴 버튼 시작 */
+function CrtDirPage(type)
+{
+	if (parent.document.getElementById('file_type').value == "01")
+	{
+		WinOpen('page_add.php?no='+parent.document.getElementById('act_num').value+'&type='+type+'&act=add',type+'_add','500','400','0');
+	}
+	else if (parent.document.getElementById('file_type').value == "02")
+	{
+		if (type == 'dir')
+			msg = "디렉토리";
+		else
+			msg = "페이지";
+			
+		alert("페이지의 하부에 "+msg+"를 생성하실 수 없습니다.");
+		return;
+	}
+	else
+	{
+		WinOpen('page_add.php?no=0&type='+type+'&act=add',type+'_add','500','400','0');
+	}
+}
+
+function GetList(type)
+{
+	list_info = type + "_list.php";
+	document.location = list_info;
+	parent.document.getElementById('act_num').value = "";
+	parent.document.getElementById('file_type').value = "";
+}
+/* 상위 메뉴 버튼 끝 */
+
+function InitList()
+{
+	if (parent.document.getElementById('act_num'))
+	{
+		if (parent.document.getElementById('act_num').value)
+		{
+			subno = "sub_"+parent.document.getElementById('act_num').value;
+			txtno = "txt_"+parent.document.getElementById('act_num').value;
+			
+			if (document.getElementById(subno))
+			{
+				headno = "head_icon_"+parent.document.getElementById('act_num').value;
+  	
+				if (document.getElementById(headno))
+				{
+					headicon = document.getElementById(headno).src;
+					if (headicon.indexOf("/admin/img/page/menu/dir_plastnode.gif") > 0)
+						document.getElementById(headno).src = "/admin/img/page/menu/dir_mlastnode.gif";
+					else if (headicon.indexOf("/admin/img/page/menu/dir_pleftnode.gif") > 0)
+						document.getElementById(headno).src = "/admin/img/page/menu/dir_mleftnode.gif";
+				}
+				
+				document.getElementById(subno).style.display = "block";
+				ViewDiv(subno);
+			}
+			else
+			{
+				if (document.getElementById(txtno))
+				{
+					parent_div_id = document.getElementById(txtno).parentNode.parentNode.parentNode.parentNode.parentNode.id;
+					if (parent_div_id)
+					{
+						document.getElementById(parent_div_id).style.display = "block";
+						ViewDiv(parent_div_id);
+					}
+				}
+			}
+			SetClick(parent.document.getElementById('act_num').value,parent.document.getElementById('file_type').value);
+			parent.info.location = 'page_info.php?no='+parent.document.getElementById('act_num').value;
+		}
+		else
+			parent.info.location = 'page_info.php';
+		
+		if (parent.document.getElementById('list1').width > 320)
+			document.getElementById('col_info').style.display = "block";
+	}
+}
+
+function ViewDiv(subno)
+{
+	view_div = document.getElementById(subno);
+
+	parent_headno = "head_icon_"+subno.substring(4);
+	if (document.getElementById(parent_headno))
+	{
+		parent_headicon = document.getElementById(parent_headno).src;
+
+		if (parent_headicon.indexOf("/admin/img/page/menu/dir_plastnode.gif") > 0)
+			document.getElementById(parent_headno).src = "/admin/img/page/menu/dir_mlastnode.gif";
+		else if (parent_headicon.indexOf("/admin/img/page/menu/dir_pleftnode.gif") > 0)
+			document.getElementById(parent_headno).src = "/admin/img/page/menu/dir_mleftnode.gif";
+	}
+					
+	var parent_div = view_div.parentNode.id;
+	if (parent_div)
+	{
+		if (document.getElementById(parent_div))
+			document.getElementById(parent_div).style.display = "block";
+  
+		ViewDiv(parent_div);
+	}
+}
+
+function ViewInfo()
+{
+	document.getElementById('col_info').style.display='none';
+	parent.document.getElementById('col_info_1').style.display='block';
+	parent.document.getElementById('col_info_2').style.display='block';
+	parent.document.getElementById('col_info_3').style.display='block';
+	parent.document.getElementById('list1').width='301';
+	parent.document.getElementById('info').width='335';
+}
+
+function SetClick(no,type)
+{
+	if (document.getElementById('clk_txt'))
+	{
+		ex_txtno = "txt_"+parent.document.getElementById('act_num').value;
+		ex_iconno = "icon_"+parent.document.getElementById('act_num').value;
+		document.getElementById(ex_txtno).innerHTML = document.getElementById('clk_txt').innerHTML;
+		document.getElementById(ex_iconno).style.display = "none";
+	}
+	
+	var txtno = "txt_"+no;
+	var iconno = "icon_"+no;
+	
+	if (document.getElementById(txtno))
+		document.getElementById(txtno).innerHTML = "<span id='clk_txt' style='background-color:#FFE59A'>"+document.getElementById(txtno).innerHTML+"</span>";
+	if (document.getElementById(iconno))
+		document.getElementById(iconno).style.display = "block";
+	parent.document.getElementById('act_num').value = no;
+	parent.document.getElementById('file_type').value = type;
+}
+
+function MenuOver(evt,line)
+{
+	if (evt.type == "mouseover")
+	{
+		line.style.background = '#FFE59A';
+		line.style.color = '#000000';
+	}
+	else if (evt.type == "mouseout")
+	{
+		line.style.background = '#FFFFFF';
+		line.style.color = '#666666';
+	}
+}
+
+function ViewMenu(evt,no,type,last_dir)
+{
+	if (type == "01")
+	{
+		if (last_dir)
+		{
+			act = "none";
+			last_act = "block";
+		}
+		else
+		{
+			act = "block";
+			last_act = "none";
+		}
+		
+		if (no == "0")
+			root_act = "none";
+		else
+			root_act = "block";
+		
+		document.getElementById('add_dir').style.display = act;
+		document.getElementById('copy_dir').style.display = root_act;
+		document.getElementById('del_dir').style.display = root_act;
+		document.getElementById('edit_dir').style.display = root_act;
+		document.getElementById('last_dir_view').style.display = last_act;
+ 		show_menu = "directory_menu";
+	}
+	else
+		show_menu = "page_menu";
+	
+	if (document.getElementById(show_menu).style.display == "none")
+	{
+		document.getElementById(show_menu).style.display = "block";
+		
+		if (evt.clientX > 210)
+			document.getElementById(show_menu).style.left = evt.clientX - document.getElementById(show_menu).offsetWidth;
+		else
+			document.getElementById(show_menu).style.left = evt.clientX;
+		
+		if (evt.clientY > 400)
+			document.getElementById(show_menu).style.top = evt.clientY - document.getElementById(show_menu).offsetHeight;
+		else
+			document.getElementById(show_menu).style.top = evt.clientY;
+	}
+	else if (document.getElementById(show_menu).style.display == "block")
+		document.getElementById(show_menu).style.display = "none";
+}
+
+function ViewSub(no,type)
+{
+	SetClick(no,type);
+	if (document.getElementById('directory_menu').style.display == "block" || document.getElementById('page_menu').style.display == "block")
+	{
+		document.getElementById('directory_menu').style.display = "none";
+		document.getElementById('page_menu').style.display = "none";
+	}
+	
+ 	parent.info.location = 'page_info.php?no='+no;
+	
+	var subno = "sub_"+no;
+	var headno = "head_icon_"+no;
+	var headicon = document.getElementById(headno).src;
+	
+	if (document.getElementById(subno))
+	{
+		if (document.getElementById(subno).style.display == "none")
+			document.getElementById(subno).style.display = "block";
+		else
+			document.getElementById(subno).style.display = "none";
+	}
+
+	if (headicon.indexOf("/admin/img/page/menu/dir_plastnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_mlastnode.gif";
+	else if (headicon.indexOf("/admin/img/page/menu/dir_pleftnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_mleftnode.gif";
+	else if (headicon.indexOf("/admin/img/page/menu/dir_mlastnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_plastnode.gif";
+	else if (headicon.indexOf("/admin/img/page/menu/dir_mleftnode.gif") > 0)
+		document.getElementById(headno).src = "/admin/img/page/menu/dir_pleftnode.gif";
+	
+	return;
+}
+
+function TrashClk(no,type)
+{
+	SetClick(no,type);
+	if (document.getElementById('del_menu').style.display == "block")
+	{
+		document.getElementById('del_menu').style.display = "none";
+	}
+  
+  if (parent.info)
+  	parent.info.location = 'page_info.php?no='+no+'&type=trash';
+}
+
+function TrashMenu(evt,no,type,last_dir)
+{
+	show_menu = "del_menu";
+	
+	if (document.getElementById(show_menu).style.display == "none")
+	{
+		document.getElementById(show_menu).style.display = "block";
+		
+		if (evt.clientX > 250)
+			document.getElementById(show_menu).style.left = evt.clientX - document.getElementById(show_menu).offsetWidth;
+		else
+			document.getElementById(show_menu).style.left = evt.clientX;
+		
+		if (evt.clientY > 400)
+			document.getElementById(show_menu).style.top = evt.clientY - document.getElementById(show_menu).offsetHeight;
+		else
+			document.getElementById(show_menu).style.top = evt.clientY;
+	}
+	else if (document.getElementById(show_menu).style.display == "block")
+		document.getElementById(show_menu).style.display = "none";
+}
+
+function HiddenMenu()
+{
+	if (document.getElementById('directory_menu'))
+	{
+		document.getElementById('directory_menu').style.display = "none";
+		document.getElementById('page_menu').style.display = "none";
+	}
+	
+	if (document.getElementById('del_menu'))
+	{
+		document.getElementById('del_menu').style.display = "none";
+	}
+}
+
+function EditPage()
+{
+	parent.builder_act.location = 'page_act.php?no='+parent.document.getElementById('act_num').value+'&act=view';
+}
+
+function Restore()
+{
+	if (confirm("해당 파일을 복원하시겠습니까?"))
+	{
+		document.location = 'waste_act.php?type=restore&no='+parent.document.getElementById('act_num').value;
+	}
+}
+
+function EmptyTrash()
+{
+	if (confirm("휴지통을 비우시겠습니까?"))
+	{
+		document.location = 'waste_act.php?type=empty&no='+parent.document.getElementById('act_num').value;
+	}
+}
+
+function DelTrash()
+{
+	if (confirm("해당 파일을 완전히 삭제하시겠습니까?"))
+	{
+		document.location = 'waste_act.php?type=delete&no='+parent.document.getElementById('act_num').value;
+	}
+}
+/* 리스트 페이지 스크립트 끝 */
+
+function frontOpen(openUrl, openName) {
+    window.open (openUrl, openName);
+}

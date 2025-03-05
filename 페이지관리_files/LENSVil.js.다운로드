@@ -1,0 +1,1993 @@
+/**
+* @class LENSVil
+*
+* @date 2009-06-19
+*
+* @modify 2009-11-06
+*
+* @author Kim Jung Yong <spongi1019@gmail.com>
+*/
+
+var isIE, isIE6, isIE7, isIE8, isOP, isFF, isSA, isChr;
+
+var LENSVil = {
+    allMethods : [],
+
+    globalMethods : [
+        'getElmsByTag',
+        'getElmsByClass',
+        'getElmsByAttr',
+        'getTextNode'
+    ],
+
+    Initialize : function(){
+        this.applyMethod.call(window, 'getElm', this.getElm);
+        this.applyMethod.call(window, 'getChildNodes', this.getChildNodes);
+        this.applyMethod.call(window, 'DOCBODY', this.DOCBODY);
+
+		this.attach(this);
+        this.setBrowser();
+    },
+
+    attach : function(object){
+        var globalMethods = object.globalMethods || 'undefined';
+        if(typeof globalMethods == 'undefined'){
+            for(var m in object){
+                if(typeof m != 'function' && m != 'init'){
+                    this.applyMethod.call(this.allMethods, m, object[m]);
+                }
+            }
+        }else if(globalMethods.constructor == Array){
+            for(var i=0; (m=globalMethods[i]); i++){
+                this.applyMethod.call(this.allMethods, m, object[m]);
+            }
+        }
+
+        if(typeof object.init == 'function'){
+            object.init();
+        }
+    },
+
+    addMethodToElm : function(elm){
+        for(var method in this.allMethods){
+            if(typeof this.allMethods[method] == 'function'){
+                this.applyMethod.call(elm, method, this.allMethods[method]);
+            }
+        }
+    },
+
+    applyMethod : function(method, func){
+        if(typeof this[method] != 'function'){
+            //Prototype 십장생이 array 객체에 prototype 을 선언해놔서 예외처리 함.
+            try{
+                this[method] = func;
+            }catch(e){}
+        }
+    },
+
+    setBrowser : function(){
+        var ua = navigator.userAgent.toLowerCase();
+
+        isIE = (ua.indexOf('msie') != -1);
+        isIE6 = (ua.indexOf('msie 6.0') != -1);
+        isIE7 = (ua.indexOf('msie 7.0') != -1);
+        isIE8 = (ua.indexOf('msie 8.0') != -1);
+        isOP = (ua.indexOf('opera') != -1);
+        isFF = (ua.indexOf('firefox') != -1);
+        isSA = (ua.indexOf('safari') != -1);
+        isChr = (ua.indexOf('chrome') != -1);
+    },
+
+    /**
+    * @brief 클래스 정의
+    * @param (string) name
+    * @param (json) context
+    */
+    defineClass : function(name, context){
+        this[name] = context;
+    },
+
+    /**
+    * @brief 문서의 body엘리먼트를 반환합니다.
+    * @param (object) doc
+    * @return object
+    */
+    DOCBODY : function(){
+        var doc = arguments[0] || document;
+
+        return getElm(doc.body) || getElm(doc.documentElement);
+    },
+
+    /**
+    * @brief 검색된 엘리먼트 반환
+    * @param (mixed) obj
+    * @param (object) doc
+    * @return object
+    */
+    getElm : function(){
+        var obj = arguments[0];
+        var doc = arguments[1] || document;
+
+        if(!obj) return null;
+
+        if(typeof obj == 'object' && obj.tagName){
+            LENSVil.addMethodToElm(obj);
+
+            return obj;
+        }
+
+        if(typeof obj == 'string'){
+            if(!doc.getElementById(obj)) return null;
+
+            obj = doc.getElementById(obj);
+            LENSVil.addMethodToElm(obj);
+
+            return obj;
+        }
+
+        return null;
+    },
+
+    /**
+    * @brief 자식 노드들 반환
+    * @param (object) elm
+    * @param (boolean) all true값이 올 경우 텍스트 노드까지 반환
+    * @return object
+    */
+    getChildNodes : function(){
+        var elm = arguments[0];
+        var all = arguments[1] || false;
+
+        var oChild = [];
+        var tmp = elm.childNodes;
+        for(var i=0; (oc = tmp[i]); i++){
+            if(all == true){
+                oChild.push(getElm(oc));
+            }else{
+                if(oc.nodeType == 1) oChild.push(getElm(oc));
+            }
+        }
+
+        if(oChild.length < 1) oChild = null;
+
+        return oChild;
+    },
+
+    /**
+    * @brief 태그명을 통해 엘리먼트 검색
+    * @param (mixed) obj
+    * @return object
+    */
+    getElmsByTag : function(){
+        var obj = arguments[0] || '*';
+
+        if(typeof obj == 'object' && obj.length > 0){
+            for(var i=0; i<obj.length; i++){
+                if(obj[i].nodeType == 1) LENSVil.addMethodToElm(obj[i]);
+            }
+
+            return obj;
+        }
+
+        if(typeof obj == 'string'){
+            var list = [];
+            var tmp = this.getElementsByTagName(obj);
+
+            for(var i=0; i<tmp.length; i++){
+                if(tmp[i].nodeType == 1){
+                    list.push(getElm(tmp[i]));
+                }
+            }
+
+            if(list.length < 1) list = null;
+
+            return list;
+        }
+    },
+
+    /**
+    * @brief 클래스명을 통해 엘리먼트 검색
+    * @param (mixed) obj
+    * @return object
+    */
+    getElmsByClass : function(){
+        var obj = arguments[0];
+
+        if(typeof obj == 'object' && obj.tagName){
+            LENSVil.addMethodToElm(obj);
+
+            return obj;
+        }
+
+        if(typeof obj == 'string'){
+            var findElms = [];
+            var reg = new RegExp("\\b"+obj+"\\b", "i");
+            var list = this.getElmsByTag();
+
+            for(var i=0; (o=list[i]); i++){
+                if(o.className && o.className.search(reg) != -1){
+                    findElms.push(o);
+                }
+            }
+
+            if(findElms.length == 1) findElms = findElms[0];
+            if(findElms.length == 0) findElms = null;
+
+            return findElms;
+        }
+    },
+
+    /**
+    * @brief 속성명과 속성값을 통해 엘리먼트 검색
+    * @param (string) name
+    * @param (string) value
+    * @param (int) flag
+    * @return object
+    */
+    getElmsByAttr : function(){
+        var name = arguments[0];
+        var value = arguments[1] ? getMetaText(arguments[1]) : '';
+        var flag = arguments[2] || 0; //0 : value가 포함되면, 1 : value로 끝나면, 2: value로 시작하면, 3 : 정확히 매치해야함.
+
+        if(!name) return;
+
+        var findElms = [];
+        var reg = new RegExp(value, "i");
+
+        if(flag == 1) reg = new RegExp(value+"$", "i");
+        else if(flag == 2) reg = new RegExp("^"+value, "i");
+        else if(flag == 3) reg = new RegExp("^"+value+"$", "i");
+
+        var list = this.getElmsByTag();
+
+        for(var i=0; i<list.length; i++){
+            var tmp = list[i];
+            if(tmp == null) continue;
+
+            if(tmp.getAttr(name) && tmp.getAttr(name).search(reg) != -1){
+                findElms.push(tmp);
+                continue;
+            }
+
+            if(tmp[name] && tmp[name].search(reg) != -1){
+                findElms.push(tmp);
+            }
+        }
+
+        if(findElms.length == 1) findElms = findElms[0];
+        if(findElms.length == 0) findElms = null;
+
+        return findElms;
+    },
+
+    /**
+    * @brief 텍스트 노드만 반환
+    * @return string
+    */
+    getTextNode : function(){
+        var regEx = /<[^<>]+>/ig;
+
+	    return this.innerHTML.replace(regEx, "");
+    }
+};
+LENSVil.Initialize();
+
+//
+// @class LENSVil.Dom Module
+//
+LENSVil.DOM = {
+    _parent : LENSVil,
+
+    globalMethods : [
+        'createElm',
+        'appendElm',
+        'removeElm',
+        'replaceElm',
+        'setAttr',
+        'getAttr',
+        'nextElm',
+        'prevElm',
+        'firstChildElm',
+        'lastChildElm'
+    ],
+
+    /**
+    * @brief 엘리먼트 생성
+    * @param (string) name
+    * @param (json) attr
+    * @param (string) context
+    * @param (boolean) append
+    * @param (object) doc
+    * @return object
+    */
+    createElm : function(name, attr, context, append, doc){
+        attr = attr || null;
+        context = context || null;
+        append = append || false;
+        doc = doc || document;
+
+        var obj = getElm(doc.createElement(name));
+
+        obj.setAttr(attr);
+        if(context !== null){
+            obj.appendElm(context);
+        }
+
+        if(append === true)
+            this.appendElm(obj);
+
+        return obj;
+    },
+
+    /**
+    * @brief 엘리먼트 추가 (+innerHTML || appendChild)
+    * @param (mixed) obj
+    */
+    appendElm : function(obj){
+        if(typeof obj == 'object')
+            this.appendChild(obj);
+        else if(typeof obj == 'string')
+            this.innerHTML += obj;
+    },
+
+    /**
+    * @brief 엘리먼트 삭제
+    */
+    removeElm : function(){
+        if(typeof this.parentNode == 'object')
+            this.parentNode.removeChild(this);
+    },
+
+    /**
+    * @brief 엘리먼트 교체
+    * @param (mixed) newElm (number || object) - 숫자가 오게 될 경우 해당 인덱스에 있는 자식노드와 교체
+    * @param (boolean) retOld - default set 'false'
+    * @return object
+    */
+    replaceElm : function(newElm, retOld){
+        retOld = retOld || false;
+
+        if(typeof newElm == 'number'){
+            var tmp = getChildNodes(this.parentNode);
+            if(typeof tmp[newElm] == 'undefined' || tmp[newElm] == this) return;
+
+            var nextElm = this.nextSibling;
+            var clone = tmp[newElm].cloneNode(true);
+
+            if(nextElm){
+                this.parentNode.insertBefore(this, tmp[newElm]);
+                this.parentNode.removeChild(tmp[newElm]);
+                this.parentNode.insertBefore(clone, nextElm);
+            }else{
+                this.parentNode.insertBefore(this, tmp[newElm]);
+                this.parentNode.removeChild(tmp[newElm]);
+                this.parentNode.appendChild(clone);
+            }
+        }else{
+            this.parentNode.replaceChild(newElm, this);
+        }
+
+        return retOld ? oldElm : getElm(newElm);
+    },
+
+    /**
+    * @brief 속성값 지정
+    * @param (mixed) data | name (인자가 하나일 경우는 json데이터, 두개일 경우는 string이 와야함)
+    * @param (string) value
+    */
+    setAttr : function(){
+        var data = null;
+
+        if(typeof arguments[0] == 'object'){
+            data = arguments[0];
+        }else if(typeof arguments[0] == 'string'){
+            data = eval("({arguments[0] : arguments[1]})");
+        }
+
+        for(var i in data){
+            this[i] = data[i];
+        }
+    },
+
+    /**
+    * @brief 속성값 반환
+    * @param (string) name
+    * @return mixed
+    */
+    getAttr : function(){
+        var name = arguments[0];
+
+        return this.getAttribute(name) || null;
+    },
+
+    /**
+    * @brief 다음 노드에 있는 엘리먼트 반환
+    * @return object
+    */
+    nextElm : function(){
+        var elm = this;
+        while ((elm = elm.nextSibling) && elm.nodeType !== 1) {}
+
+        return getElm(elm || null);
+    },
+
+    /**
+    * @brief 이전 노드에 있는 엘리먼트 반환
+    * @return object
+    */
+    prevElm : function(){
+        var elm = this;
+        while ((elm = elm.previousSibling) && elm.nodeType !== 1) {}
+
+        return getElm(elm || null);
+    },
+
+    /**
+    * @brief 첫번째 자식 엘리먼트 반환
+    * @param (string) tagName (인자가 들어오면 해당 태그와 매치함)
+    * @return object
+    */
+    firstChildElm : function(tagName){
+        tagName = tagName || null;
+        var elm = this.getElmsByTag(tagName)[0];
+
+        return elm;
+    },
+
+    /**
+    * @brief 이전 노드에 있는 엘리먼트 반환
+    * @param (string) tagName (인자가 들어오면 해당 태그와 매치함)
+    * @return object
+    */
+    lastChildElm : function(tagName){
+        tagName = tagName || null;
+
+        var elm = this.getElmsByTag(tagName);
+        elm = elm[elm.length-1];
+
+        return elm;
+    }
+};
+LENSVil.attach(LENSVil.DOM);
+
+//
+// @class LENSVil.CSS Module
+//
+LENSVil.CSS = {
+    _parent : LENSVil,
+
+    globalMethods : [
+        'addClass',
+        'removeClass',
+        'replaceClass',
+        'hasClass',
+        'setStyle',
+        'getStyle'
+    ],
+
+    /**
+    * @brief 클래스 추가
+    * @param (string) className
+    */
+    addClass : function(className){
+        if(this.hasClass(className) === false){
+
+            isSetClass = this.className ? true : false;
+            this.className = this.className + (isSetClass ? " " : '') + className;
+
+        }
+    },
+
+    /**
+    * @brief 클래스 제거
+    * @param (string) className
+    */
+    removeClass : function(className){
+        if(this.hasClass(className)){
+
+            var reg = new RegExp("(^|\\s)"+className+"(\\s|$)", "i");
+            this.className = this.className.replace(reg, '');
+
+        }
+    },
+
+    /**
+    * @brief 클래스 교체
+    * @param (string) newClass
+    * @param (string) oldClass
+    */
+    replaceClass : function(newClass, oldClass){
+        if(this.hasClass(oldClass)){
+
+            var reg = new RegExp("\\b"+oldClass+"\\b", "i");
+            this.className = this.className.replace(reg, newClass);
+
+        }
+    },
+
+    /**
+    * @brief 클래스 존재여부 파악
+    * @param (string) className
+    */
+    hasClass : function(className){
+        var reg = new RegExp("\\b"+className+"\\b", "i");
+
+        if(this.className.search(reg) != -1)
+            return true;
+        else
+            return false;
+    },
+
+    /**
+    * @brief 스타일 지정
+    * @param (string) styles
+    */
+    setStyle : function(styles){
+        if(typeof styles != 'string') return;
+
+        if(isIE){
+            this.style.setAttribute('cssText', styles);
+        }else{
+            this.setAttribute('style', styles);
+        }
+    },
+
+    /**
+    * @brief 해당 엘리먼트에 인라인으로 지정된 스타일 반환
+    */
+    getStyle : function(){
+        if(this && this.style && this.style.cssText) return this.style.cssText;
+        else return '';
+    }
+};
+LENSVil.attach(LENSVil.CSS);
+
+//
+// @class LENSVil.Content Module
+// @brief 전역 멤버로 활동하는 메서드들.(단독 사용)
+//
+LENSVil.Content = {
+    _parent : LENSVil,
+
+    init : function(){
+        this._parent.applyMethod.call(window, 'exit', this.exit);
+        this._parent.applyMethod.call(window, 'winOpen', this.winOpen);
+        this._parent.applyMethod.call(window, 'winOpenPost', this.winOpenPost);
+        this._parent.applyMethod.call(window, 'getByte', this.getByte);
+        this._parent.applyMethod.call(window, 'getCoordiCenterByScr', this.getCoordiCenterByScr);
+        this._parent.applyMethod.call(window, 'getCoordiCenterByDoc', this.getCoordiCenterByDoc);
+        this._parent.applyMethod.call(window, 'getClientHeight', this.getClientHeight);
+        this._parent.applyMethod.call(window, 'getClientWidth', this.getClientWidth);
+        this._parent.applyMethod.call(window, 'getBodyHeight', this.getBodyHeight);
+        this._parent.applyMethod.call(window, 'getBodyWidth', this.getBodyWidth);
+        this._parent.applyMethod.call(window, 'getScrollTop', this.getScrollTop);
+        this._parent.applyMethod.call(window, 'getScrollLeft', this.getScrollLeft);
+        this._parent.applyMethod.call(window, 'getElmCoordi', this.getElmCoordi);
+        this._parent.applyMethod.call(window, 'getURLArgs', this.getURLArgs);
+        this._parent.applyMethod.call(window, 'getURLtail', this.getURLtail);
+        this._parent.applyMethod.call(window, 'getMetaText', this.getMetaText);
+        this._parent.applyMethod.call(window, 'removeGetArgs', this.removeGetArgs);
+        this._parent.applyMethod.call(window, 'setCookie', this.setCookie);
+        this._parent.applyMethod.call(window, 'getCookie', this.getCookie);
+        this._parent.applyMethod.call(window, 'rmCookie', this.rmCookie);
+        this._parent.applyMethod.call(window, 'trim', this.trim);
+        this._parent.applyMethod.call(window, 'htmlspecialchars', this.htmlspecialchars);
+        this._parent.applyMethod.call(window, 'getHtmlTranslationTable', this.getHtmlTranslationTable);
+        this._parent.applyMethod.call(window, 'stripTags', this.stripTags);
+        this._parent.applyMethod.call(window, 'jsonEncode', this.jsonEncode);
+        this._parent.applyMethod.call(window, 'jsonDecode', this.jsonDecode);
+    },
+
+    /**
+    * @brief EXIT
+    */
+    exit : function(){
+
+        if(window.addEventListener){
+
+            window.addEventListener('error', function(e){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+            }, false);
+
+        }else if(window.attchEvent){
+
+            window.attachEvent('onerror', function(e){
+
+                e.returnValue = false;
+                e.cancelBubble = true;
+
+            });
+
+        }
+
+        if(window.stop) window.stop();
+
+        throw '';
+
+    },
+
+    /**
+    * @brief 윈도우 오픈 (GET)
+    */
+    winOpen : function(){
+
+        var url = arguments[0].url;
+        var height = arguments[0].height ? arguments[0].height : null;
+        var width = arguments[0].width ? arguments[0].width : null;
+        var top = arguments[0].top ? arguments[0].top : null;
+        var left = arguments[0].left ? arguments[0].left : null;
+        var name = arguments[0].name ? arguments[0].name : 'openWindow';
+
+        if(top == null) top = 50;
+        if(left == null) left = 200;
+
+        var opt = "width="+width+",height="+height+",status=no,resizable=yes,scrollbars=no,menubar=no,location=no,top="+top+",left="+left;
+
+        var openWin = window.open(url, name, opt);
+
+        return openWin;
+
+    },
+
+    /**
+    * @brief 윈도우 오픈 (POST)
+    */
+    winOpenPost : function(){
+
+        var url = arguments[0].url;
+        var height = arguments[0].height ? arguments[0].height : null;
+        var width = arguments[0].width ? arguments[0].width : null;
+        var top = arguments[0].top ? arguments[0].top : null;
+        var left = arguments[0].left ? arguments[0].left : null;
+        var name = arguments[0].name ? arguments[0].name : 'openWindow';
+
+        var postData = arguments[1] || null;
+
+        if(top == null) top = 50;
+        if(left == null) left = 200;
+
+        var opt = "width="+width+",height="+height+",status=no,resizable=yes,scrollbars=no,menubar=no,location=no,top="+top+",left="+left;
+
+        if(top == null) top = 50;
+        if(left == null) left = 200;
+
+        var openWin = window.open('', name, opt);
+
+        var targetForm = DOCBODY().createElm('form', {
+            id : 'LENSVil_openForm',
+            name : 'LENSVil_openForm',
+            method :'post',
+            target : name,
+            action : url
+        }, null, true);
+
+        if(postData !== null){
+
+            for(var i in postData){
+                targetForm.createElm('input', {
+                    type : 'hidden',
+                    name : i,
+                    value : postData[i]
+                }, null, true);
+            }
+
+        }
+
+        targetForm.submit();
+
+        return openWin;
+
+    },
+
+    /**
+    * @brief 바이트 계산
+    */
+    getByte : function(str){
+        var encode = encodeURIComponent(str);
+        var totalBytes = 0;
+        var chr;
+        var bytes;
+        var code;
+
+        for(var i = 0; i < encode.length; i++)
+        {
+            chr = encode.charAt(i);
+            if(chr != "%") totalBytes++;
+            else
+            {
+                code = parseInt(encode.substr(i+1,2),16);
+                if(!(code & 0x80)) totalBytes++;
+                else
+                {
+                    if((code & 0xE0) == 0xC0) bytes = 2;
+                    else if((code & 0xF0) == 0xE0) bytes = 3;
+                    else if((code & 0xF8) == 0xF0) bytes = 4;
+                    else return -1;
+                    i += 3 * (bytes - 1);
+                    if(document.charset == "utf-8") totalBytes += bytes;
+                    else totalBytes += 2;
+                }
+                i += 2;
+            }
+        }
+
+        return totalBytes;
+    },
+
+    /**
+    * @brief 화면의 중앙에 위치 할수 있도록 하는 창의 좌표값을 반환
+    * @param int w (창 가로)
+    * @param int h (창 세로)
+    * @return array(x, y);
+    */
+    getCoordiCenterByScr : function(w, h){
+
+        var result = [];
+        var _scrWidth = window.screen.availWidth;
+        var _srcHeight = window.screen.availHeight;
+
+        var centerX = _scrWidth / 2;
+        var centerY = _srcHeight / 2;
+
+        var halfW = w / 2;
+        var halfH = h / 2;
+
+        var x = centerX - halfW;
+        var y = centerY - halfH;
+
+        result.x = parseInt(x);
+        result.y = parseInt(y);
+
+        return result;
+
+    },
+
+    /**
+    * @brief 문서 중앙에 위치 할 수 있도록 하는 엘리먼트의 좌표값 반환
+    * @param int w(대상 가로)
+    * @param int h(대상 세로)
+    * @return array(x, y);
+    */
+    getCoordiCenterByDoc : function(w, h){
+
+        var result = [];
+        var _docWidth = getClientWidth();
+        var _docHeight = getClientHeight();
+
+        var centerX = _docWidth / 2;
+        var centerY = _docHeight / 2;
+
+        var halfW = w / 2;
+        var halfH = h / 2;
+
+        var x = centerX - halfW;
+        var y = centerY - halfH;
+
+        result.x = parseInt(x);
+        result.y = parseInt(y);
+
+        return result;
+
+    },
+
+    /**
+    * @brief 보이는 부분의 문서높이
+    */
+    getClientHeight : function(){
+        var win = arguments[0] ? arguments[0] : window;
+        var doc = arguments[0] ? win.document : document;
+
+        var h=0;
+        if(doc.compatMode == 'CSS1Compat' && !isOP && doc.documentElement && doc.documentElement.clientHeight)
+            h=doc.documentElement.clientHeight;
+        else if(doc.body && doc.body.clientHeight)
+            h=doc.body.clientHeight;
+        else if(xDef(win.innerWidth,win.innerHeight,doc.width)) {
+            h=win.innerHeight;
+            if(doc.width>win.innerWidth) h-=16;
+        }
+        return h;
+    },
+
+    /**
+    * @brief 보이는 부분의 문서폭
+    */
+    getClientWidth : function(){
+        var win = arguments[0] ? arguments[0] : window;
+        var doc = arguments[0] ? win.document : document;
+
+        var w=0;
+        if(doc.compatMode == 'CSS1Compat' && !isOP && doc.documentElement && doc.documentElement.clientWidth)
+            w=doc.documentElement.clientWidth;
+        else if(doc.body && doc.body.clientWidth)
+            w=doc.body.clientWidth;
+        else if(xDef(win.innerWidth,win.innerHeight,doc.height)) {
+            w=win.innerWidth;
+            if(doc.height>win.innerHeight) w-=16;
+        }
+        return w;
+    },
+
+    /**
+    * @brief 문서 전체 높이
+    */
+    getBodyHeight : function(){
+        var win = arguments[0] ? arguments[0] : window;
+        var doc = arguments[0] ? win.document : document;
+
+        var ch = getClientHeight(win);
+        var sh = doc.body.scrollHeight;
+        return ch>sh?ch:sh;
+    },
+
+    /**
+    * @brief 문서 전체 가로
+    */
+    getBodyWidth : function(){
+        var win = arguments[0] ? arguments[0] : window;
+        var doc = arguments[0] ? win.document : document;
+
+        var cw = getClientWidth(win);
+        var sw = doc.body.scrollWidth;
+        return cw>sw?cw:sw;
+    },
+
+    /**
+    * @brief 현재 세로 스크롤 위치
+    */
+    getScrollTop : function(){
+        if(document.documentElement && document.documentElement.scrollTop)
+            return document.documentElement.scrollTop;
+        else
+            return document.body.scrollTop;
+    },
+
+    /**
+    * @brief 현재 가로 스크롤 위치
+    */
+    getScrollLeft : function(){
+        if(document.documentElement && document.documentElement.scrollLeft)
+            return document.documentElement.scrollLeft;
+        else
+            return document.body.scrollLeft;
+    },
+
+    /**
+    * @brief 해당 엘리먼트의 문서상 좌표값을 반환
+    */
+    getElmCoordi : function(elm){
+        if( typeof(elm) != 'string' && typeof(elm) != 'object' ) return;
+
+        if( typeof(obj) == 'string' )
+            elm = getElm(elm);
+
+        var parent = elm.offsetParent;
+        var result = {};
+
+        result.top = elm.offsetTop + elm.offsetHeight;
+        result.left = elm.offsetLeft;
+
+        while(parent){
+            result.top += parent.offsetTop;
+            result.left += parent.offsetLeft;
+            parent = parent.offsetParent;
+        }
+
+        return result;
+    },
+
+    /**
+    * @brief url쿼리를 배열로 반환
+    * @param (string) args
+    * @return json
+    */
+    getURLArgs : function(){
+        var getArgs = [];
+        var args = (arguments[0] || location.search).replace(/\?/, '').split('&');
+
+        for(var i=0; (arg=args[i]); i++){
+            var tmp = arg.split('=');
+            getArgs[tmp[0]] = tmp[1] || '';
+        }
+
+        return getArgs;
+    },
+
+    /**
+    * @brief url주소의 파일명과 쿼리부분만 문자열로 반환
+    * @return string (menu.php?component=aaaaa)
+    */
+    getURLtail : function(){
+        var url = location.href;
+        var idx = url.lastIndexOf('/');
+
+        if(idx == -1) return '';
+
+        return url.substr(idx+1);
+    },
+
+    /**
+    * @brief 정규식 문자를 escape 시킨 값을 반환.
+    * @param (string) str
+    * @return string
+    */
+    getMetaText : function(){
+        var str = arguments[0];
+        var result = '';
+
+        for(var i = 0; i < str.length; i++){
+            if((/([\$\(\)\*\+\.\[\]\?\\\^\{\}\|]{1})/).test(str.charAt(i))){
+                result += str.charAt(i).replace((/([\$\(\)\*\+\.\[\]\?\\\^\{\}\|]{1})/), "\\$1");
+            }else{
+                result += str.charAt(i);
+            }
+        }
+
+        return result;
+    },
+
+    /**
+    * @brief URL주소형식의 문자열에서 get값으로 넘어온 값을 문자열에서 삭제시켜준다.
+    * @param (string) url
+    * @param (string) name
+    * @return string
+    */
+    removeGetArgs : function(url, name){
+        var reg = new RegExp("([&|?])("+name+"=[^&]+)", "ig"); //@brief &name=aaa 나 ?name=aaa 요런식의 문자열을 찾아낸다.
+        var reg_a = new RegExp("\\?&", "ig");
+        var reg_b = new RegExp("(\\?$|&$)", "ig");
+
+        url = url.replace(reg, "$1");
+        url = url.replace(reg_a, "?");
+        url = url.replace(reg_b, "");
+
+        return url;
+    },
+
+    /**
+    * @brief 쿠키굽기
+    * @param (string) name 쿠키명
+    * @param (string) value 쿠키값
+    * @param (int) expire 유효기간(일기준)
+    * @param (string) path 유효패쓰
+    * @param (string) domain 유효도메인
+    * @param (boolean) secure 쿠키 허용 프로토콜 지정(true일 경우 https나 기타 보안 프로토콜만 쿠키를 사용할수 있음)
+    */
+    setCookie : function(name, value, expire, path, domain, secure){
+        var cookie = name + '=' + encodeURIComponent(value);
+
+        if(expire || expire == 0){
+            cookie += '; max-age=' + (expire * 24 * 60 * 60);
+        }
+
+        if(path) cookie += '; path=' + path;
+        if(domain) cookie += '; domain=' + domain;
+        if(secure) cookie += '; secure';
+
+        document.cookie = cookie;
+    },
+
+    /**
+    * @brief 쿠키값을 반환
+    * @param (string) name
+    */
+    getCookie : function(name){
+        var allcookie = document.cookie;
+        if(allcookie === '') return;
+
+        var cookie = null;
+        var cookies = allcookie.split(';');
+        for(var i=0; i < cookies.length; i++){
+            var tmp = cookies[i].split('=');
+            if(trim(tmp[0]) == trim(name)){
+                cookie = trim(tmp[1]);
+                break;
+            }
+        }
+
+        if(cookie == null) return;
+
+        return decodeURIComponent(cookie);
+    },
+
+    /**
+    * @brief 쿠키 제거
+    */
+    rmCookie : function(name, path, domain, secure){
+        setCookie(name, '', 0, path, domain, secure);
+    },
+
+    /**
+    * @brief 문자열의 앞뒤 공백 제거
+    * @param (string) str
+    */
+    trim : function(str){
+        if(typeof str != 'string') return;
+
+        return str.replace(/(^\s*)|(\s*$)/g, '');
+    },
+
+    /**
+    * @brief HTML 문자열 변환
+    * @param string string
+    * @param string quote_style
+    * @return string
+    */
+    htmlspecialchars : function(string, quote_style){
+
+        var histogram = {}, symbol = '', tmp_str = '', i = 0;
+        tmp_str = string.toString();
+
+        if (false === (histogram = getHtmlTranslationTable('HTML_SPECIALCHARS', quote_style))) {
+            return false;
+        }
+
+        for (symbol in histogram) {
+            entity = histogram[symbol];
+            tmp_str = tmp_str.split(symbol).join(entity);
+        }
+
+        return tmp_str;
+
+    },
+
+    /**
+    * @brief HTML 코드 변환
+    */
+    getHtmlTranslationTable : function(table, quote_style){
+        var entities = {}, histogram = {}, decimal = 0, symbol = '';
+        var constMappingTable = {}, constMappingQuoteStyle = {};
+        var useTable = {}, useQuoteStyle = {};
+
+        useTable      = (table ? table.toUpperCase() : 'HTML_SPECIALCHARS');
+        useQuoteStyle = (quote_style ? quote_style.toUpperCase() : 'ENT_COMPAT');
+
+        // Translate arguments
+        constMappingTable[0]      = 'HTML_SPECIALCHARS';
+        constMappingTable[1]      = 'HTML_ENTITIES';
+        constMappingQuoteStyle[0] = 'ENT_NOQUOTES';
+        constMappingQuoteStyle[2] = 'ENT_COMPAT';
+        constMappingQuoteStyle[3] = 'ENT_QUOTES';
+
+        // Map numbers to strings for compatibilty with PHP constants
+        if (!isNaN(useTable)) {
+            useTable = constMappingTable[useTable];
+        }
+        if (!isNaN(useQuoteStyle)) {
+            useQuoteStyle = constMappingQuoteStyle[useQuoteStyle];
+        }
+
+        if (useTable == 'HTML_SPECIALCHARS') {
+            // ascii decimals for better compatibility
+            entities['60'] = '&lt;';
+            entities['62'] = '&gt;';
+            entities['38'] = '&amp;';
+        } else if (useTable == 'HTML_ENTITIES') {
+            // ascii decimals for better compatibility
+            entities['38'] = '&amp;';
+            entities['60'] = '&lt;';
+            entities['62'] = '&gt;';
+            entities['160'] = '&nbsp;';
+            entities['161'] = '&iexcl;';
+            entities['162'] = '&cent;';
+            entities['163'] = '&pound;';
+            entities['164'] = '&curren;';
+            entities['165'] = '&yen;';
+            entities['166'] = '&brvbar;';
+            entities['167'] = '&sect;';
+            entities['168'] = '&uml;';
+            entities['169'] = '&copy;';
+            entities['170'] = '&ordf;';
+            entities['171'] = '&laquo;';
+            entities['172'] = '&not;';
+            entities['173'] = '&shy;';
+            entities['174'] = '&reg;';
+            entities['175'] = '&macr;';
+            entities['176'] = '&deg;';
+            entities['177'] = '&plusmn;';
+            entities['178'] = '&sup2;';
+            entities['179'] = '&sup3;';
+            entities['180'] = '&acute;';
+            entities['181'] = '&micro;';
+            entities['182'] = '&para;';
+            entities['183'] = '&middot;';
+            entities['184'] = '&cedil;';
+            entities['185'] = '&sup1;';
+            entities['186'] = '&ordm;';
+            entities['187'] = '&raquo;';
+            entities['188'] = '&frac14;';
+            entities['189'] = '&frac12;';
+            entities['190'] = '&frac34;';
+            entities['191'] = '&iquest;';
+            entities['192'] = '&Agrave;';
+            entities['193'] = '&Aacute;';
+            entities['194'] = '&Acirc;';
+            entities['195'] = '&Atilde;';
+            entities['196'] = '&Auml;';
+            entities['197'] = '&Aring;';
+            entities['198'] = '&AElig;';
+            entities['199'] = '&Ccedil;';
+            entities['200'] = '&Egrave;';
+            entities['201'] = '&Eacute;';
+            entities['202'] = '&Ecirc;';
+            entities['203'] = '&Euml;';
+            entities['204'] = '&Igrave;';
+            entities['205'] = '&Iacute;';
+            entities['206'] = '&Icirc;';
+            entities['207'] = '&Iuml;';
+            entities['208'] = '&ETH;';
+            entities['209'] = '&Ntilde;';
+            entities['210'] = '&Ograve;';
+            entities['211'] = '&Oacute;';
+            entities['212'] = '&Ocirc;';
+            entities['213'] = '&Otilde;';
+            entities['214'] = '&Ouml;';
+            entities['215'] = '&times;';
+            entities['216'] = '&Oslash;';
+            entities['217'] = '&Ugrave;';
+            entities['218'] = '&Uacute;';
+            entities['219'] = '&Ucirc;';
+            entities['220'] = '&Uuml;';
+            entities['221'] = '&Yacute;';
+            entities['222'] = '&THORN;';
+            entities['223'] = '&szlig;';
+            entities['224'] = '&agrave;';
+            entities['225'] = '&aacute;';
+            entities['226'] = '&acirc;';
+            entities['227'] = '&atilde;';
+            entities['228'] = '&auml;';
+            entities['229'] = '&aring;';
+            entities['230'] = '&aelig;';
+            entities['231'] = '&ccedil;';
+            entities['232'] = '&egrave;';
+            entities['233'] = '&eacute;';
+            entities['234'] = '&ecirc;';
+            entities['235'] = '&euml;';
+            entities['236'] = '&igrave;';
+            entities['237'] = '&iacute;';
+            entities['238'] = '&icirc;';
+            entities['239'] = '&iuml;';
+            entities['240'] = '&eth;';
+            entities['241'] = '&ntilde;';
+            entities['242'] = '&ograve;';
+            entities['243'] = '&oacute;';
+            entities['244'] = '&ocirc;';
+            entities['245'] = '&otilde;';
+            entities['246'] = '&ouml;';
+            entities['247'] = '&divide;';
+            entities['248'] = '&oslash;';
+            entities['249'] = '&ugrave;';
+            entities['250'] = '&uacute;';
+            entities['251'] = '&ucirc;';
+            entities['252'] = '&uuml;';
+            entities['253'] = '&yacute;';
+            entities['254'] = '&thorn;';
+            entities['255'] = '&yuml;';
+        } else {
+            throw Error("Table: "+useTable+' not supported');
+            return false;
+        }
+
+        if (useQuoteStyle != 'ENT_NOQUOTES') {
+            entities['34'] = '&quot;';
+        }
+
+        if (useQuoteStyle == 'ENT_QUOTES') {
+            entities['39'] = '&#039;';
+        }
+
+        // ascii decimals to real symbols
+        for (decimal in entities) {
+            symbol = String.fromCharCode(decimal);
+            histogram[symbol] = entities[decimal];
+        }
+
+        return histogram;
+    },
+
+    /**
+    * @brief 태그 제거
+    * @param string str
+    * @param string allowed_tags (ex : <b><i>)
+    * @return string
+    */
+    stripTags : function(str, allowed_tags){
+        var key = '', tag = '', allowed = false;
+        var matches = allowed_array = [];
+        var allowed_keys = {};
+
+        var replacer = function(search, replace, str) {
+            return str.split(search).join(replace);
+        };
+
+        // Build allowes tags associative array
+        if (allowed_tags) {
+            allowed_array = allowed_tags.match(/([a-zA-Z]+)/gi);
+        }
+
+        str += '';
+
+        // Match tags
+        matches = str.match(/(<\/?[^>]+>)/gi);
+
+        // Go through all HTML tags
+        for (key in matches) {
+            if (isNaN(key)) {
+                // IE7 Hack
+                continue;
+            }
+
+            // Save HTML tag
+            html = matches[key].toString();
+
+            // Is tag not in allowed list? Remove from str!
+            allowed = false;
+
+            // Go through all allowed tags
+            for (k in allowed_array) {
+                // Init
+                allowed_tag = allowed_array[k];
+                i = -1;
+
+                if (i != 0) { i = html.toLowerCase().indexOf('<'+allowed_tag+'>');}
+                if (i != 0) { i = html.toLowerCase().indexOf('<'+allowed_tag+' ');}
+                if (i != 0) { i = html.toLowerCase().indexOf('</'+allowed_tag)   ;}
+
+                // Determine
+                if (i == 0) {
+                    allowed = true;
+                    break;
+                }
+            }
+
+            if (!allowed) {
+                str = replacer(html, "", str); // Custom replace. No regexing
+            }
+        }
+
+        return str;
+    },
+
+    /**
+    * @brief json 데이터를 문자열로 컨버팅
+    * @param mixed o
+    * @return string
+    */
+    jsonEncode : function(o){
+
+        var pad = function(n){
+            return n < 10 ? "0" + n : n;
+        };
+
+        var m = {
+            "\b": '\\b',
+            "\t": '\\t',
+            "\n": '\\n',
+            "\f": '\\f',
+            "\r": '\\r',
+            '"' : '\\"',
+            "\\": '\\\\'
+        };
+
+        var encodeArray = function(o){
+            var a = ["["], b, i, l = o.length, v;
+            for (i = 0; i < l; i += 1) {
+                v = o[i];
+                switch (typeof v) {
+                    case "undefined":
+                    case "function":
+                    case "unknown":
+                        break;
+                    default:
+                        if (b) {
+                            a.push(',');
+                        }
+                        a.push(v === null ? "null" : jsonEncode(v));
+                        b = true;
+                }
+            }
+            a.push("]");
+            return a.join("");
+        };
+
+        var encodeString = function(s){
+
+            if (/["\\\x00-\x1f]/.test(s)) {
+                return '"' + s.replace(/([\x00-\x1f\\"])/g, function(a, b) {
+                    var c = m[b];
+                    if(c){
+                        return c;
+                    }
+                    c = b.charCodeAt();
+                    return "\\u00" +
+                        Math.floor(c / 16).toString(16) +
+                        (c % 16).toString(16);
+                    }) + '"';
+            }
+            return '"' + s + '"';
+
+        };
+
+        var encodeDate = function(o){
+            return '"' + o.getFullYear() + "-" +
+            pad(o.getMonth() + 1) + "-" +
+            pad(o.getDate()) + "T" +
+            pad(o.getHours()) + ":" +
+            pad(o.getMinutes()) + ":" +
+            pad(o.getSeconds()) + '"';
+        };
+
+        if(typeof o == "undefined" || o === null){
+            return null;
+        }else if(o instanceof Array){
+            return encodeArray(o);
+        }else if(o instanceof Date){
+            return encodeDate(o);
+        }else if(typeof o == "string"){
+            return encodeString(o);
+        }else if(typeof o == "number"){
+            return isFinite(o) ? String(o) : "null";
+        }else if(typeof o == "boolean"){
+            return String(o);
+        }else{
+
+            var a = ["{"];
+            var b;
+
+            for(var i in o){
+
+                if( !o.hasOwnProperty(i) ) continue;
+                var v = o[i];
+                switch(typeof i){
+                    case "undefined":
+                    case "function":
+                    case "unknown":
+                        break;
+
+                    default:
+                        if(b){
+                            a.push(",");
+                        }
+
+
+                        a.push( jsonEncode(i), ":", v === null ? "null" : jsonEncode(v));
+
+                        b = true;
+                        break;
+                }
+            }
+
+        }
+
+        a.push("}");
+        return a.join("");
+
+    },
+
+    /**
+    * @brief json 문자열을 오브젝트로 컨버팅
+    * @param string str
+    * @return object
+    */
+    jsonDecode : function(str){
+
+        return eval('('+str+')');
+
+    }
+
+};
+LENSVil.attach(LENSVil.Content);
+
+//
+// @class XML Module
+//
+LENSVil.XML = {
+    _parent : LENSVil,
+
+    /**
+    * @brief XML 로드
+    */
+    load : function(url){
+        var xmldoc = this.create();
+
+        //크롬의 경우 방식이 다름
+        if(isChr){
+            xmldoc.open('GET', url, false);
+            xmldoc.send(null);
+            return xmldoc.responseXML.documentElement;
+        }
+
+        xmldoc.async = false;
+        xmldoc.load(url);
+
+        return xmldoc;
+    },
+
+    /**
+    * @brief XML 로드(비동기)
+    */
+    loadAsync : function(url, callback){
+        var xmldoc = this.create();
+
+        //크롬은 비동기를 지원시키지 않는다.
+        if(isChr) throw 'not supported Chrome Broswer';
+
+        if(document.implementation && document.implementation.createDocument){
+            xmldoc.onload = function(){ callback(xmldoc); }
+        }else{
+            xmldoc.onreadystatechange = function(){
+                if(xmldoc.readyState == 4) callback(xmldoc);
+            }
+        }
+
+        xmldoc.load(url);
+    },
+
+    /**
+    * @brief XML문서 생성
+    */
+    create : function(rootTag, nspURL){
+        if(!rootTag) rootTag = '';
+        if(!nspURL) nspURL = '';
+
+        if(document.implementation && document.implementation.createDocument){
+            //크롬의 경우 방식이 다르다.
+            if(isChr) return (new window.XMLHttpRequest());
+
+            return document.implementation.createDocument(nspURL, rootTag, null);
+        }else{
+            var doc = new ActiveXObject("MSXML2.DOMDocument");
+
+            if(rootTag){
+                var prefix = '';
+                var tagName = rootTag;
+                var p = rootTag.indexOf(':');
+
+                if(p != -1){
+                    prefix = rootTag.substring(0, p);
+                    tagName = rootTag.substring(p+1);
+                }
+
+                if(nspURL){
+                    if(!prefix) prefix = 'a0';
+                }else{
+                    prefix = '';
+                }
+
+                var text = '<' + (prefix ? (prefix+':') : '') + tagName + (nspURL ? (' xmlns:'+prefix+'="'+nspURL+'"') : '') + '/>';
+
+                doc.loadXML(text);
+            }
+
+            return doc;
+        }
+    },
+
+    /**
+    * @brief 텍스트로 받은 인자를 XML문서로 파싱
+    */
+    parse : function(text){
+        if(typeof DOMParser != 'undefined'){
+            return (new DOMParser()).parseFromString(text, 'application/xml');
+        }else if(typeof ActiveXObject != 'undefined'){
+            var doc = this.create();
+            doc.loadXML(text);
+            return doc;
+        }else{
+            var url = 'data:text/xml;charset=utf-8,' + encodeURIComponent(text);
+            var request = new XMLHttpRequest();
+            request.open('GET', url, false);
+            request.send(null);
+            return request.responseXML;
+        }
+    },
+
+    /**
+    * @brief XML 객체를 문자열로 반환
+    * unserialize 는 parse메서드를 이용하자.
+    */
+    serialize : function(xmlObj){
+        if(typeof XMLSerializer != 'undefined'){
+            return (new XMLSerializer()).serializeToString(xmlObj);
+        }else if(xmlObj.xml){
+            return xmlObj.xml;
+        }else{
+            throw 'LENSVil.XML.serialize is not supported or cant serialize ' + xmlObj;
+        }
+    }
+};
+
+//
+// @class Ajax Module
+//
+LENSVil.AJAX = {
+    _parent : LENSVil,
+
+    READY_STATE_LOADING : 1,        //@brief 요청
+    READY_STATE_INTERACTIVE : 3,    //@brief 결과값을 받는 중
+    READY_STATE_COMPLEATE : 4,      //@brief 완료
+
+    setRequest : function(){
+        var XMLhttp = null;
+
+        if(window.XMLHttpRequest){
+			XMLhttp = new XMLHttpRequest();
+		}else if(window.ActiveXObject){
+			XMLhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+        return XMLhttp;
+    },
+
+    setCreateAjax : function(XMLhttp, createObj){
+
+        if(XMLhttp == null) return;
+
+        var url = createObj.url;
+        var method = createObj.method || 'GET';
+        var params = createObj.params;
+        var callback = createObj.callback || null;
+        var beforecallback = createObj.beforecallback || null;
+        var headers = createObj.headers || null;
+        var responseType = createObj.responseType || 'text';
+        var exception = createObj.exception || this.defaultError;
+
+        if(method == 'GET'){
+            url = url + '?' + params;
+            params = null;
+        }
+
+        XMLhttp.open(method, url, true);
+
+        //POST
+        if(method == 'POST'){
+            XMLhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            if(XMLhttp.overrideMimeType){
+                XMLhttp.overrideMimeType('text/xml');
+                XMLhttp.setRequestHeader("Connection", "close");
+            }
+        }
+
+        //JSON
+        if(responseType == 'json'){
+            XMLhttp.setRequestHeader("Accept", "application/json, text/javascript, */*");
+        }
+
+        //헤더설정
+        for(var i in headers){
+            if (typeof i === "string") {
+                XMLhttp.setRequestHeader(i, headers[i]);
+            }
+        }
+
+        //readyState 컴플리트용 콜백함수
+        if (typeof callback === "function") {
+
+            XMLhttp.onreadystatechange = function(){
+
+                try{
+                    if(XMLhttp.readyState == LENSVil.AJAX.READY_STATE_COMPLEATE){
+                        try{
+                            if(XMLhttp.status == 200){
+                                var response = LENSVil.AJAX.getResponse(XMLhttp, responseType);
+                                callback.call(XMLhttp, response);
+                            }
+                        }catch(e){
+                            exception.call(LENSVil.AJAX, e);
+                        }finally{
+                            XMLHttp = null;
+                        }
+                    }else if(XMLhttp.readyState == LENSVil.AJAX.READY_STATE_LOADING){
+                        if(typeof beforecallback === "function"){
+                            try{
+                                beforecallback.call(XMLhttp);
+                            }catch(e){
+                                exception.call(LENSVil.AJAX, e);
+                            }
+                        }
+                    }
+                }catch(e){
+                }
+
+            }
+        }
+
+        XMLhttp.send(params);
+
+    },
+
+    /**
+    * @brief AJAX 객체 생성
+    * @param (json) createObj
+    *
+    * 아래 메서드는 JSON 데이터를 인자로 받아 AJAX 객체를 생성합니다.
+    * 실제 객체 생성은 setCreateAjax 메서드에게 위임하고 있습니다.
+    */
+    create : function(createObj){
+        if(createObj.url){
+            var XMLhttp = this.setRequest();
+            this.setCreateAjax(XMLhttp, createObj);
+        }
+    },
+
+    /**
+    * @brief 타입별로 결과값을 변환시켜 반환
+    * @param (string) type
+    */
+    getResponse : function(XMLhttp, type){
+        var result = XMLhttp.responseText;
+        type = type.toLowerCase() || 'text';
+
+        switch(type){
+            case 'json' :
+                result = eval("("+result+")");
+                break;
+
+            case 'xml' :
+                result = XMLhttp.responseXML;
+                break;
+        }
+
+        return result;
+    },
+
+    /**
+    * @brief 기본 에러 핸들러
+    */
+    defaultError : function(){
+        alert("Error Fetching data! Callback function confirm plz!"
+			+ "\n\n status : " + this.getStatus()
+			+ "\n readyState : " + this.getReadyState()
+        );
+    }
+};
+
+//
+// @class Events Module
+//
+LENSVil.Events = {
+    _parent : LENSVil,
+
+    globalMethods : [
+        'addEvent',
+        'removeEvent'
+    ],
+
+    init : function(){
+        this._parent.applyMethod('targetElm', this.targetElm);
+        this._parent.applyMethod('preventDefault', this.preventDefault);
+        this._parent.applyMethod('stopPropagation', this.stopPropagation);
+    },
+
+    /**
+    * @brief 이벤트 추가
+    * @param (string) e
+    * @param (function) func
+    */
+    addEvent : function(e, func){
+        var reg = new RegExp("^on", "i");
+
+        if(isIE)
+            e = e.search(reg) != -1 ? e.toLowerCase() : 'on' + e.toLowerCase();
+        else
+            e = e.toLowerCase().replace(reg, '');
+
+        if(window.addEventListener){
+            this.addEventListener(e, func, false);
+        }else if(window.attachEvent){
+            this.attachEvent(e, func);
+        }
+    },
+
+    /**
+    * @brief 이벤트 제거
+    * @param (string) e
+    * @param (function) func
+    */
+    removeEvent : function(e, func){
+        var reg = new RegExp("^on", "i");
+
+        if(isIE)
+            e = e.search(reg) != -1 ? e.toLowerCase() : 'on' + e.toLowerCase();
+        else
+            e = e.toLowerCase().replace(reg, '');
+
+        if(window.removeEventListener){
+            this.removeEventListener(e, func, false);
+        }else if(window.detachEvent){
+            this.detachEvent(e, func);
+        }
+    },
+
+    /**
+    * @brief 이벤트가 발생된 엘리먼트 반환
+    * @param (event) e
+    */
+    targetElm : function(e){
+        return e.target || e.srcElement;
+    },
+
+    /**
+    * @brief 이벤트 취소
+    * @param (event) e
+    */
+    preventDefault : function(e){
+        e = e || window.event;
+
+        if (e.preventDefault) e.preventDefault();
+        else e.returnValue = false;
+    },
+
+    /**
+    * @brief 이벤트 전파 금지
+    * @param (event) e
+    */
+    stopPropagation : function(e){
+        e = e || window.event;
+
+        if (e.stopPropagation) e.stopPropagation();
+        else e.cancelBubble = true;
+    }
+};
+LENSVil.attach(LENSVil.Events);
+
+//
+// @class DOMLoad
+// @brief DOM에 접근 가능한 시점을 알아내 콜백함수를 실행한다.
+//
+LENSVil.DOMLoad = {
+    DOMLoaded : false,  //@brief DOM로드 시점을 파악
+    execFuncs : [],     //@brief 실행될 콜백 함수 배열
+
+    init : function(){
+        //익스
+        if(isIE){
+            document.write("<script type=\"text/javascript\" id=\"domScriptLoad\" defer=\"defer\" src=\".\"><\/script>");
+            getElm('domScriptLoad').onreadystatechange = function(){
+                if(this.readyState == 'complete'){
+                    LENSVil.DOMLoad.isDOMLoaded();
+                }
+            }
+        }
+        //모질라 계열
+        else if(document.addEventListener){
+            document.addEventListener("DOMContentLoaded", function(){ LENSVil.DOMLoad.isDOMLoaded(); }, false);
+        }
+        //이외
+        else{
+            DOMChecking = setInterval(function(){
+                if(document.readyState == 'complete'){
+                    LENSVil.DOMLoad.isDOMLoaded();
+                    clearInterval(DOMChecking);
+                }
+            }, 10);
+        }
+    },
+
+    isDOMLoaded : function(){
+        if(this.DOMLoaded) return;
+
+        this.DOMLoaded = true;
+        this.execFunc();
+    },
+
+    execFunc : function(){
+        for(var i=0; (fn=this.execFuncs[i]); i++){
+            (fn)();
+        }
+
+        this.execFuncs = [];
+    },
+
+    /**
+    * @brief DOM 이 모두 로드 된 후에 인자로 받은 콜백함수를 실행한다.
+    * @param (function) *
+    */
+    ready : function(){
+        if(arguments.length < 1) return;
+
+        for(var i=0; (ar=arguments[i]); i++){
+            if(!ar.readyState){
+                ar.readyState = true;
+                this.execFuncs.push(ar);
+            }
+        }
+
+        if(this.DOMLoaded == true){
+            this.execFunc();
+        }
+    }
+};
+LENSVil.attach(LENSVil.DOMLoad);
+
+//
+// @class Debug Module
+//
+LENSVil.Debug = {
+    _parent : LENSVil,
+
+    /**
+    * @brief Serialize 메서드
+    * @param (mixed) mixed_value
+    */
+    serialize : function(mixed_value){
+
+        var _getType = function( inp ) {
+            var type = typeof inp, match;
+            if (type == 'object' && !inp) {
+                return 'null';
+            }
+            if (type == "object") {
+                if (!inp.constructor) {
+                    return 'object';
+                }
+                var cons = inp.constructor.toString();
+                if (match = cons.match(/(\w+)\(/)) {
+                    cons = match[1].toLowerCase();
+                }
+                var types = ["boolean", "number", "string", "array"];
+                for (key in types) {
+                    if (cons == types[key]) {
+                        type = types[key];
+                        break;
+                    }
+                }
+            }
+            return type;
+        };
+        var type = _getType(mixed_value);
+        var val, ktype = '';
+
+        switch (type) {
+            case "function":
+                val = "";
+                break;
+            case "undefined":
+                val = "N";
+                break;
+            case "boolean":
+                val = "b:" + (mixed_value ? "1" : "0");
+                break;
+            case "number":
+                val = (Math.round(mixed_value) == mixed_value ? "i" : "d") + ":" + mixed_value;
+                break;
+            case "string":
+                val = "s:" + mixed_value.length + ":\"" + mixed_value + "\"";
+                break;
+            case "array":
+            case "object":
+                val = "a";
+                var count = 0;
+                var vals = "";
+                var okey;
+                for (key in mixed_value) {
+                    ktype = _getType(mixed_value[key]);
+                    if (ktype == "function" && ktype == "object") {
+                        continue;
+                    }
+
+                    okey = (key.match(/^[0-9]+$/) ? parseInt(key) : key);
+                    vals += serialize(okey) +
+                            serialize(mixed_value[key]);
+                    count++;
+                }
+                val += ":" + count + ":{" + vals + "}";
+                break;
+        }
+        if (type != "object" && type != "array") val += ";";
+        return val;
+    },
+
+    /**
+    * @brief unSerialize 메서드
+    * @param (string) data
+    */
+    unserialize : function(data){
+        var error = function (type, msg, filename, line){throw new window[type](msg, filename, line);};
+        var read_until = function (data, offset, stopchr){
+            var buf = [];
+            var chr = data.slice(offset, offset + 1);
+            var i = 2;
+            while(chr != stopchr){
+                if((i+offset) > data.length){
+                    error('Error', 'Invalid');
+                }
+                buf.push(chr);
+                chr = data.slice(offset + (i - 1),offset + i);
+                i += 1;
+            }
+            return [buf.length, buf.join('')];
+        };
+        var read_chrs = function (data, offset, length){
+            buf = [];
+            for(var i = 0;i < length;i++){
+                var chr = data.slice(offset + (i - 1),offset + i);
+                buf.push(chr);
+            }
+            return [buf.length, buf.join('')];
+        };
+        var _unserialize = function (data, offset){
+            if(!offset) offset = 0;
+            var buf = [];
+            var dtype = (data.slice(offset, offset + 1)).toLowerCase();
+
+            var dataoffset = offset + 2;
+            var typeconvert = new Function('x', 'return x');
+            var chrs = 0;
+            var datalength = 0;
+
+            switch(dtype){
+                case "i":
+                    typeconvert = new Function('x', 'return parseInt(x)');
+                    var readData = read_until(data, dataoffset, ';');
+                    var chrs = readData[0];
+                    var readdata = readData[1];
+                    dataoffset += chrs + 1;
+                break;
+                case "b":
+                    typeconvert = new Function('x', 'return (parseInt(x) == 1)');
+                    var readData = read_until(data, dataoffset, ';');
+                    var chrs = readData[0];
+                    var readdata = readData[1];
+                    dataoffset += chrs + 1;
+                break;
+                case "d":
+                    typeconvert = new Function('x', 'return parseFloat(x)');
+                    var readData = read_until(data, dataoffset, ';');
+                    var chrs = readData[0];
+                    var readdata = readData[1];
+                    dataoffset += chrs + 1;
+                break;
+                case "n":
+                    readdata = null;
+                break;
+                case "s":
+                    var ccount = read_until(data, dataoffset, ':');
+                    var chrs = ccount[0];
+                    var stringlength = ccount[1];
+                    dataoffset += chrs + 2;
+
+                    var readData = read_chrs(data, dataoffset+1, parseInt(stringlength));
+                    var chrs = readData[0];
+                    var readdata = readData[1];
+                    dataoffset += chrs + 2;
+                    if(chrs != parseInt(stringlength) && chrs != readdata.length){
+                        error('SyntaxError', 'String length mismatch');
+                    }
+                break;
+                case "a":
+                    var readdata = {};
+
+                    var keyandchrs = read_until(data, dataoffset, ':');
+                    var chrs = keyandchrs[0];
+                    var keys = keyandchrs[1];
+                    dataoffset += chrs + 2;
+
+                    for(var i = 0;i < parseInt(keys);i++){
+                        var kprops = _unserialize(data, dataoffset);
+                        var kchrs = kprops[1];
+                        var key = kprops[2];
+                        dataoffset += kchrs;
+
+                        var vprops = _unserialize(data, dataoffset);
+                        var vchrs = vprops[1];
+                        var value = vprops[2];
+                        dataoffset += vchrs;
+
+                        readdata[key] = value;
+                    }
+
+                    dataoffset += 1;
+                break;
+                default:
+                    error('SyntaxError', 'Unknown / Unhandled data type(s): ' + dtype);
+                break;
+            }
+            return [dtype, dataoffset - offset, typeconvert(readdata)];
+        };
+        return _unserialize(data, 0)[2];
+    }
+};

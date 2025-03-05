@@ -1,0 +1,42 @@
+/**
+* @brief Iframe에 접속통계 페이지 요청
+* @param (string) user_id 계정아이디
+* @param (string) is_rb (1:리셀러 엔드유저, 0:일반)
+* @param (string) server 서버명
+*/
+function sendBuilderLog(user_id, is_rb, server){
+    var obj = document.createElement('form');
+    obj.target = 'weblog_frame';
+    obj.method = 'post';
+
+    //요청 dir, con 설정
+    var urlArgs = getURLArgs();
+
+    var dir = urlArgs.dir || 'smr';
+    var cont = urlArgs.cont ? '_' + urlArgs.cont : '';
+    var sProtocol = (("https:" == document.location.protocol) ? "https:" : "http:");
+    var uri = '';
+
+    //RB서버인 경우와 아닌경우
+    if (is_rb == "1") {
+        uri = 'https://' + server + '.fmcity.com/blg/rpt/rpt_' + dir + cont + '_tab.php';
+    } else {
+        uri = 'https://' + server + '.cafe24.com/blg/rpt/rpt_' + dir + cont + '_tab.php';
+    }
+    obj.action = '/admin/autologin/request.php?uri='+encodeURIComponent(uri);
+
+    var elm = document.createElement('input');
+    elm.type = 'hidden';
+    elm.name = 'IS_BUILDER';
+    elm.value = '1';
+    obj.appendChild(elm);
+
+    var elm = document.createElement('input');
+    elm.type = 'hidden';
+    elm.name = 'MALL_ID';
+    elm.value = user_id.toLowerCase();
+    obj.appendChild(elm);
+    document.body.appendChild(obj);
+
+    obj.submit();
+}

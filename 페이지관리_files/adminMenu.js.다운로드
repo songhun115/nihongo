@@ -1,0 +1,603 @@
+// *******************************************************************************************
+//
+// @brief 관리자 메뉴 이벤트 & 동작 설정
+//
+// @Date 2009-03-20
+//
+// @Developer Kim Jung Yong <jykim1@simplexi.com>
+//
+// *******************************************************************************************
+
+//
+// @class AdminMenuController
+//
+var AdminMenuController = {
+    pannelTopMenu : null,   //@brief topmenu 라는 id를 가지고 있는 테이블 엘리먼트
+
+    oneDepthElms : null,    //@brief 탑메뉴 엘리먼트
+    twoDepthElms : null,    //@brief 자식메뉴 엘리먼트(탑메뉴 밑으로 나오는 메뉴)
+    leftParentElms : null,  //@brief 레프트메뉴 부모 엘리먼트
+    leftChildElms : null,   //@brief 레프트메뉴 자식 엘리먼트
+    leftHeadElm : null,     //@brief 레프트헤드 엘리먼트
+
+    leftBannerElm : null,   //@brief 레프트메뉴 배너영역(현재 채팅매니져 배너만 사용)
+
+    onTopMenuElm : null,    //@brief 현재 마우스를 올린(on이미지가 활성화 되어있는) 탑메뉴 엘리먼트
+
+    currentMenu : [],       //@brief 현재 메뉴(currentMenu.T 탑메뉴 , currentMenu.C 차일드, ,currentMenu.CI 차일드 아이템, currentMenu.L 현재 2Depth 레프트 메뉴, currentMenu.LC 현재 2Depth 레프트의 자식)
+
+    docWidth : 1100,        //@brief 차일드 메뉴가 나오는 위치값을 계산하기 위한 문서 기준 크기 설정
+
+    init : function(){
+        this.pannelTopMenu = getElm('topmenu');
+
+        this._setOneDepthElms();
+        this._setTwoDepthElms();
+        this._setLeftElms();
+
+        this.createView();
+
+        this.Util.setFirstChildMenuUrl();
+        this.Util.setChatBanner();
+        this.setRolloverImgLoad();
+        this.setCurrentMenuStyle();
+        this.setChildMenuStyle();
+        this.setLeftMenuStyle();
+        this.setEventTopMenu();
+        this.setEventLeftParentMenu();
+    },
+
+    _setOneDepthElms : function(){
+        if(getElm('onedepth') == null) return;
+
+        this.oneDepthElms = getElm('onedepth').getElmsByTag('img');
+    },
+
+    _setTwoDepthElms : function(){
+        if(getElm('twodepth') == null) return;
+
+        this.twoDepthElms = getElm('twodepth').getElmsByTag('dl');
+    },
+
+    _setLeftElms : function(){
+        if(getElm('leftmenu') == null) return;
+        if(getElm('leftmenu').getElmsByTag('dt').length === 0) return;
+
+        //leftmenu 부모 TD 백그라운드 다시 설정(각 페이지별로 회색으로 표시가 되어 있어 이렇게 일괄로 처리)
+        getElm('leftmenu').parentNode.style.backgroundColor = '#FFF';
+
+        this.leftHeadElm = getElm('left_menu_head');
+        this.leftParentElms = getElm('leftmenu').getElmsByTag('dt');
+        this.leftChildElms = getElm('leftmenu').getElmsByTag('dd');
+
+        this.leftBannerElm = getElm('leftmenu_banner');
+    },
+
+    _setOnTopMenuElm : function(){
+        var reg_on = new RegExp("_on", "i");
+        for(var i=0; (el=this.oneDepthElms[i]); i++){
+            alert(el.src);
+            if(reg_on.exec(el.src)){
+                this.onTopMenuElm = el;
+                break;
+            }
+        }
+    },
+
+    /**
+    * @brief 객체 뷰어를 생성(엘리먼트 객체안에서 해당 클래스를 참조할수 있게 하기 위함)
+    */
+    createView : function(){
+        if(this.oneDepthElms){
+            for(var i=0; (el = this.oneDepthElms[i]); i++){
+                el.AMC = this;
+            }
+        }
+
+        if(this.leftParentElms){
+            for(var i=0; (el = this.leftParentElms[i]); i++){
+                el.AMC = this;
+            }
+        }
+    },
+
+    /**
+    * @brief 탑메뉴 이벤트 설정
+    */
+    setEventTopMenu : function(){
+        if(this.oneDepthElms == null) return;
+
+        for(var i=0; (el = this.oneDepthElms[i]); i++){
+            el.addEvent('mouseover', this.Event.onTopMenu);
+        }
+    },
+
+    /**
+    * @brief 2Depth 메뉴 이벤트 설정
+    */
+    setEventLeftParentMenu : function(){
+        if(this.leftParentElms == null) return;
+
+        for(var i=0; (el = this.leftParentElms[i]); i++){
+            el.addEvent('click', this.Event.clickLeftParentMenu);
+        }
+    },
+
+    /**
+    * @brief 탑메뉴 자식메뉴의 초기 스타일 설정
+    */
+    setChildMenuStyle : function(){
+        if(this.twoDepthElms){
+            for(var i=0; (el = this.twoDepthElms[i]); i++){
+                el.lastChildElm('dd').addClass('end');
+            }
+        }
+    },
+
+    /**
+    * @brief 레프트 메뉴의 초기 스타일 설정
+    */
+    setLeftMenuStyle : function(){
+        if(this.leftParentElms){
+            this.leftParentElms[0].addClass('first');
+        }
+    },
+
+    /**
+    * @brief 레프트 메뉴 헤드 제목 설정
+    */
+    setLeftHead : function(str){
+        this.leftHeadElm.innerHTML = str;
+    },
+
+    /**
+    * @brief 이미지를 미리 로드한다.
+    */
+    setRolloverImgLoad : function(){
+        if(this.oneDepthElms){
+            for(var i=0; (el = this.oneDepthElms[i]); i++){
+                (new Image()).src = el.getAttr('rollover');
+            }
+        }
+    },
+
+    /**
+    * @brief 마우스 커서가 탑메뉴 테이블의 영역을 벗어나면 현재 메뉴 표시를 하기 위함
+    */
+    setRestoreMenuStyle : function(){
+    },
+
+    /**
+    * @brief 현재 페이지가 어떠한 메뉴의 href에 포함이 되어 있지 않을 경우 cookie에 있는 값을 참조해 변화시킨다.
+    * 이 메서드가 필요한 이유는 페이지 안에 또다른 소메뉴가 존재할 경우 url값을 참조할수 없기 때문
+    */
+    _xSetCurrentMenuStyle : function(menuType){
+        switch(menuType){
+            case 'topMenu' :
+                var menuId = getCookie('currTopMenu');
+                this.currentMenu.T = getElm(menuId);
+                this.onTopMenuElm = this.currentMenu.T;
+
+                this.currentMenu.T.src = this.currentMenu.T.src.replace((new RegExp("_off", "i")), "_on");
+
+                var cName = 'child_' + menuId;
+                var left = this.Util.getChildLeft(getElm(cName));
+                this.displayChildMenu(getElm(cName), left);
+                break;
+
+            case 'leftMenu' :
+                var menuId = getCookie('leftMenu');
+                var subMenuId = getCookie('leftMenuSub');
+
+                this.currentMenu.L = getElm(menuId);
+                this.currentMenu.LC = getElm(subMenuId)
+
+                this.currentMenu.L.addClass('now');
+                this.currentMenu.LC.addClass('now_sub');
+
+                this.setLeftHead(this.currentMenu.L.getTextNode());
+
+                this.Util.displayLeftChild(this.currentMenu.L, 'onload');
+
+                break;
+
+            case 'topChildMenu' :
+                var menuId = getCookie('currChildMenu');
+                getElm(menuId).setStyle('color:#2568A9');
+                break;
+        }
+    },
+
+    /**
+    * @brief 현재 위치에 해당 되는 메뉴 엘리먼트들에게 스타일을 설정함.
+    */
+    setCurrentMenuStyle : function(){
+        var urlArgs = getURLArgs();
+
+        //탑 메뉴
+        if(this.oneDepthElms && typeof(urlArgs.tid) != 'undefined'){
+            for(var i=0; (el=this.oneDepthElms[i]); i++){
+                var str = 'tid='+urlArgs.tid;
+                var o = getElm(el.parentNode.parentNode).getElmsByAttr('href', str, 1);
+
+                if(o != null){
+                    var findElm = o.getElmsByTag('img')[0];
+                    findElm.src = findElm.src.replace((new RegExp("_off", "i")), "_on");
+
+                    this.currentMenu.T = findElm;
+                    this.onTopMenuElm = findElm;
+
+                    //현재 top 메뉴 cookie로 저장
+                    setCookie('currTopMenu', findElm.id, null, '/');
+
+                    //초기 로드시 아래는 현재위치의 탑 자식메뉴를 계속 출력하기 위함
+                    var cName = 'child_' + findElm.id;
+                    var left = this.Util.getChildLeft(getElm(cName));
+                    this.displayChildMenu(getElm(cName), left);
+                }
+            }
+
+        //파일로 관리되는 놈들
+        }else if (this.oneDepthElms) {
+            for(var i=0; (el=this.oneDepthElms[i]); i++){
+               if(/_on\./i.test(el.src) == true){
+
+                   this.currentMenu.T = el;
+                   this.onTopMenuElm = el;
+
+                   //현재 top 메뉴 cookie로 저장
+                   setCookie('currTopMenu', el.id, null, '/');
+
+                   var cName = 'child_' + el.id;
+                   var left = this.Util.getChildLeft(getElm(cName));
+                   this.displayChildMenu(getElm(cName), left);
+               }
+            }
+        }
+
+
+
+        //레프트 메뉴
+        if(this.leftChildElms){
+
+            for(var i=0; (el=this.leftChildElms[i]); i++){
+                var str = getURLtail();
+
+                var o = el.getElmsByAttr('href', str, 1);
+
+                if(o == null) continue;
+
+                var currElm = getElm(o.parentNode);
+                currElm.addClass('now_sub');
+                this.currentMenu.LC = currElm;
+
+                //현재 left 메뉴 cookie로 저장(3Depth)
+                setCookie('leftMenuSub', currElm.id, null, '/');
+
+                var parentElm = currElm.prevElm();
+                while(parentElm){
+                    if(parentElm.tagName.toLowerCase() == 'dt'){
+                        parentElm.addClass('now');
+                        this.currentMenu.L = parentElm;
+
+                        //현재 left 메뉴 cookie로 저장(2Depth)
+                        setCookie('leftMenu', parentElm.id, null, '/');
+
+                        this.setLeftHead(parentElm.getTextNode());
+                        break;
+                    }
+
+                    parentElm = parentElm.prevElm();
+                }
+            }
+
+        }
+
+        //Top의 자식 메뉴 아이템
+        if(this.currentMenu.C){
+            var currChildElms = this.currentMenu.C.getElmsByTag('dd');
+            for(var i=0; (el = currChildElms[i]); i++){
+                //레프트 메뉴가 있을 경우
+                if(this.currentMenu.L){
+                    if(el.getTextNode() == this.currentMenu.L.getTextNode()){
+                        this.currentMenu.CI = el.firstChildElm();
+                        el.firstChildElm().setStyle('color:#2568A9');
+
+                        //현재 차일드 메뉴 cookie로 저장
+                        setCookie('currChildMenu', this.currentMenu.CI.id, null, '/');
+                    }
+                }
+            }
+        }
+
+        //현재 2Depth 레프트 메뉴 펼치기
+        if(this.currentMenu.L){
+            this.Util.displayLeftChild(this.currentMenu.L, 'onload');
+        }
+
+
+        //@Waring 위 프로세스를 타지 않은 예외상황의 경우 처리 방법
+        if(this.leftChildElms){
+            if(this.currentMenu.T == null) this._xSetCurrentMenuStyle('topMenu');
+            if(this.currentMenu.L == null) this._xSetCurrentMenuStyle('leftMenu');
+            if(this.currentMenu.CI == null) this._xSetCurrentMenuStyle('topChildMenu');
+        }
+    },
+
+    /**
+    * @brief 탑메뉴 롤오버 효과
+    * @param (object) elm (해당 인자 빼고는 모두 off처리)
+    */
+    rollOverTopMenu : function(elm){
+        var reg_off = new RegExp("_off", "i");
+        var reg_on = new RegExp("_on", "i");
+
+        elm.src = elm.src.replace(reg_off, "_on");
+
+        this.onTopMenuElm = elm;
+
+        for(var i=0; (el = this.oneDepthElms[i]); i++){
+            if(elm != el){
+                el.src = el.src.replace(reg_on, "_off");
+            }
+        }
+    },
+
+    /**
+    * @brief 탑메뉴 온,오버 이벤트에 따른 자식 메뉴 출력
+    * @param (object) elm (인자가 안들어 올 경우는 모두 숨김)
+    * @param (int) left (paddingLeft값)
+    *
+    */
+    displayChildMenu : function(elm, left){
+        if(!this.twoDepthElms) return;
+
+        for(var i=0; (el = this.twoDepthElms[i]); i++){
+            if(elm){
+                if(el == elm){
+                    el.style.left = left+'px';
+                    el.style.visibility = 'visible';
+
+                    //현재 Child 메뉴를 저장시켜놓는다
+                    this.currentMenu.C = el;
+                }else{
+                    el.style.visibility = 'hidden';
+                }
+            }else{
+                el.style.visibility = 'hidden';
+            }
+        }
+    }
+}
+
+//
+// @class AdminMenuController.Event
+//
+AdminMenuController.Event = {
+    /**
+    * @brief 탑메뉴 온
+    */
+    onTopMenu : function(e){
+        e = e || window.event;
+        LENSVil.stopPropagation(e);
+
+        var target = LENSVil.targetElm(e);
+        var cName = 'child_' + target.id;
+
+        target.AMC.rollOverTopMenu(target);
+
+        var left = target.AMC.Util.getChildLeft(getElm(cName));
+
+        if(getElm(cName)){
+            target.AMC.displayChildMenu(getElm(cName), left);
+        }else{
+            target.AMC.displayChildMenu();
+        }
+    },
+
+    /**
+    * @brief 탑메뉴 아웃
+    */
+    outTopMenu : function(e){
+    },
+
+    /**
+    * @brief TODO 탑메뉴 테이블을 벗어날 경우 setRestoreMenuStyle 메서드 호출
+    */
+    outPannelTopMenu : function(e){
+        e = e ? e : window.event;
+    },
+
+    /**
+    * @brief 2Depth 레프트 메뉴를 클릭할 경우
+    */
+    clickLeftParentMenu : function(e){
+        e = e || window.event;
+        LENSVil.stopPropagation(e);
+
+        var target = LENSVil.targetElm(e);
+
+        if (target.AMC) target.AMC.Util.displayLeftChild(target);
+    }
+
+}
+
+//
+// @class AdminMenuController.Util
+//
+AdminMenuController.Util = {
+    _parent : AdminMenuController,
+
+    /**
+    * @brief 탑메뉴의 자식 메뉴가 위치할 left값을 반환
+    */
+    getChildLeft : function(childElm){
+        if(!childElm) return 0;
+
+        var result = 0;
+
+        var docWidth = this._parent.docWidth;
+        var childWidth = childElm.offsetWidth;
+        var offsetLeft = getElmCoordi(this._parent.onTopMenuElm).left - 20;
+        var offsetWidth = this._parent.onTopMenuElm.offsetWidth;
+
+        if( (offsetLeft + childWidth) > docWidth){
+            result = offsetLeft - childWidth + offsetWidth;
+            result = result < 0 ? 0 : result;
+        }else{
+            result = offsetLeft;
+        }
+
+        return result;
+    },
+
+    /**
+    * @brief 탑의 자식 메뉴중 첫번째 메뉴를 탑메뉴의 url로 세팅한다.
+    * @param (object) elm
+    *
+    * 이 메서드는 탑메뉴를 눌렀을 경우 2Depth메뉴의 첫번째 메뉴가 링크가 걸려야 하기 때문
+    * DB상에 url 데이터를 바꾸면 될거 같지만 DB상에 있는 데이터만 바꿔서는 현재 메뉴 표시가 불가능하기 때문에
+    * 일부러 스크립트 처리를 해줌
+    */
+    setFirstChildMenuUrl : function(elm){
+		if (this._parent.oneDepthElems) {
+			for(var i=0; (el = this._parent.oneDepthElms[i]); i++){
+				var cMenu = getElm('child_'+el.id);
+
+				if(cMenu != null){
+					el.parentNode.href = cMenu.firstChildElm().getElmsByTag('a')[0].href;
+				}
+			}
+		}
+    },
+
+    /**
+    * @brief 레프트 메뉴의 자식메뉴들을 펼치는 기능
+    * @param (object) elm
+    */
+    displayLeftChild : function(elm, isOnload){
+        //레프트 메뉴가 없을 경우 탈출
+        if(!this._parent.currentMenu.L) return;
+        //현재 클릭한 메뉴가 열린 메뉴일 경우 탈출
+        if(this._parent.currentMenu.L == elm && isOnload != 'onload') return;
+
+        elm = getElm(elm);
+        //현재 열린 메뉴 닫기
+        var parentElm = this._parent.currentMenu.L.nextElm();
+
+        while(parentElm){
+            if(parentElm.tagName.toLowerCase() == 'dd'){
+                parentElm.setStyle("display:none");
+            }else{
+                break;
+            }
+
+            parentElm = parentElm.nextElm();
+        }
+
+        this._parent.currentMenu.L.removeClass('now');
+
+        //현재 클릭한 메뉴 열기
+        this._parent.currentMenu.L = elm;
+
+        var parentElm = elm.nextElm();
+        while(parentElm){
+            if(parentElm.tagName.toLowerCase() == 'dd'){
+                parentElm.setStyle("display:block");
+            }else{
+                break;
+            }
+
+            parentElm = parentElm.nextElm();
+        }
+
+        //효과
+        this._parent.currentMenu.L.addClass('now');
+    },
+
+    /**
+    * @brief 채팅매니져 배너 삽입
+    */
+    setChatBanner : function(){
+
+        if( !getCookie('MRAZChatAdminWindow') ) return;
+
+        try{
+            this._parent.leftBannerElm.setStyle('text-align:center;cursor:pointer');
+            this._parent.leftBannerElm.createElm('img', {src:'/cimg/chat/chat_manager_banner.gif'}, null, true);
+
+            this._parent.leftBannerElm.addEvent('click', function(){
+
+                var coordi = getCoordiCenterByScr(337, 118);
+
+                winOpen({
+                    url : '/chtml/chat/admin_login.php',
+                    name : 'MRAZAdminWindow',
+                    width : 337,
+                    height : 118,
+                    top : coordi.y,
+                    left : coordi.x
+                });
+
+            });
+
+        }catch(e){}
+
+    }
+}
+
+// @brief DOM 로드시 관리자 메뉴 컨트롤러 초기화 실행
+LENSVil.DOMLoad.ready(function(){
+    AdminMenuController.init();
+});
+
+//
+// @기존 left.tpl 에 물려있던 소스들
+//
+function bodyShow(idx){
+    var num= parseInt(idx) +1;
+    var nodeObj= document.getElementById('menus_' +num );
+
+    if(nodeObj) {
+        var dis = nodeObj.style.display;
+        if(dis == 'none') dis = 'block';
+        else dis = 'none';
+    }
+}
+
+function popWin(uri , w , h,is_scroll,is_resize) {
+    var features = "width=" + w + ",height=" + h;
+    features += ",scrollbars=1";
+    if (is_resize) features += ",resizable=yes";
+    else features += ",resizable=no";
+    window.open(uri, 'popup' , features);
+}
+/*
+function setSelect(obj,value){
+    getElm(obj).value = '/admin/template/toss.php?tpl_id='+value;
+}
+*/
+function imgError(el) {
+    var obj =  document.getElementById(el);
+    obj.innerHTML = "";
+}
+
+function ctiMove(cti_id) {
+    location.replace('http://cti.'+cti_id+'.cafe24.com/admin/cti/index.php?module=main');
+}
+
+function moveMyTemplate(obj){
+    if(obj.selectedIndex != 0)
+        window.open(obj.options[obj.selectedIndex].value,'_self');
+    else
+        return;
+}
+
+function setNavigator(){
+    var navi_sub_title = getElm('leftmenu').getElmsByClass('now_sub').getTextNode();
+    var navi_sub_parent_title = getElm('leftmenu').getElmsByClass('now').getTextNode();
+
+    getElm('navi_sub_title').innerHTML = navi_sub_title;
+    getElm('navi_curr_menu_parent').innerHTML = navi_sub_parent_title;
+    getElm('navi_curr_menu').innerHTML = navi_sub_title;
+}
